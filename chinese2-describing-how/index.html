@@ -1,0 +1,153 @@
+<title>Hanzi Practice: Describing How</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #232a36; --ink-soft: #4b5563; --paper: #eef2ee; --paper-raised: #ffffff;
+    --grid: #c7d0c9; --grid-strong: #aab6ac; --seal: #ac3a2e; --seal-ink: #ffffff;
+    --brass: #8a6a2e; --muted: #6b7280; --ring: rgba(172,58,46,0.35); --shadow: rgba(35,42,54,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e8e6df; --ink-soft: #b7bcc6; --paper: #12161d; --paper-raised: #1b212a;
+      --grid: #333c48; --grid-strong: #47515f; --seal: #e07567; --seal-ink: #1b1210;
+      --brass: #d3ac6a; --muted: #8b93a1; --ring: rgba(224,117,103,0.35); --shadow: rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8e6df; --ink-soft: #b7bcc6; --paper: #12161d; --paper-raised: #1b212a;
+    --grid: #333c48; --grid-strong: #47515f; --seal: #e07567; --seal-ink: #1b1210;
+    --brass: #d3ac6a; --muted: #8b93a1; --ring: rgba(224,117,103,0.35); --shadow: rgba(0,0,0,0.35);
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif; padding-inline: 16px; padding-block: 28px; display: flex; justify-content: center; }
+  .page { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 18px; }
+  .masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .masthead h1 { font-family: "Noto Serif TC", serif; font-weight: 700; font-size: clamp(20px, 5vw, 26px); margin: 0; text-wrap: balance; }
+  .progress { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; font-weight: 500; white-space: nowrap; }
+  .toprow { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+  .toggle { display: inline-flex; background: var(--paper-raised); border: 1px solid var(--grid-strong); border-radius: 999px; padding: 3px; gap: 3px; box-shadow: 0 1px 2px var(--shadow); }
+  .toggle button { border: none; background: transparent; color: var(--ink-soft); font-family: inherit; font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
+  .toggle button.active { background: var(--seal); color: var(--seal-ink); }
+  .card { background: var(--paper-raised); border-radius: 20px; padding: 26px 22px 22px; box-shadow: 0 1px 3px var(--shadow), 0 12px 28px -18px var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .char-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .char-box {
+    position: relative; border-radius: 14px; border: 1.5px solid var(--grid-strong);
+    background:
+      linear-gradient(45deg, transparent calc(50% - 0.75px), var(--grid) calc(50% - 0.75px), var(--grid) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+      linear-gradient(-45deg, transparent calc(50% - 0.75px), var(--grid) calc(50% - 0.75px), var(--grid) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+      linear-gradient(var(--grid), var(--grid)) center / 100% 1.5px no-repeat,
+      linear-gradient(var(--grid), var(--grid)) center / 1.5px 100% no-repeat,
+      var(--paper-raised);
+    transition: box-shadow 0.25s ease; touch-action: none;
+  }
+  .char-box.done { box-shadow: 0 0 0 3px var(--ring); }
+  .char-box svg { position: relative; z-index: 1; }
+  .caption { text-align: center; display: flex; flex-direction: column; gap: 2px; }
+  .caption .pinyin { font-weight: 600; color: var(--brass); font-size: 17px; }
+  .caption .english { color: var(--muted); font-style: italic; font-size: 14px; }
+  .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
+  button.action { font-family: inherit; font-size: 14px; font-weight: 600; border-radius: 10px; padding: 10px 16px; cursor: pointer; border: 1.5px solid var(--grid-strong); background: var(--paper-raised); color: var(--ink); }
+  button.action:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+  button.primary { background: var(--seal); border-color: var(--seal); color: var(--seal-ink); }
+  button.action:disabled { opacity: 0.4; cursor: default; }
+  footer.note { text-align: center; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+  @media (prefers-reduced-motion: reduce) { .char-box { transition: none; } }
+</style>
+
+<div class="page">
+  <div class="masthead">
+    <h1>Stroke Order: Describing How</h1>
+    <div class="progress" id="progress">1 / 5</div>
+  </div>
+  <div class="toprow">
+    <div class="toggle" id="scriptToggle">
+      <button data-mode="simplified" class="active" type="button">Simplified</button>
+      <button data-mode="traditional" type="button">Traditional</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="char-row" id="charRow"></div>
+    <div class="caption">
+      <div class="pinyin" id="pinyin"></div>
+      <div class="english" id="english"></div>
+    </div>
+    <div class="controls">
+      <button class="action" id="prevBtn" type="button">&larr; Previous</button>
+      <button class="action" id="showBtn" type="button">Show stroke order</button>
+      <button class="action primary" id="nextBtn" type="button">Next &rarr;</button>
+    </div>
+  </div>
+  <footer class="note">How you travel — fast, slow, careful, careless — from the Chinese 2A Transportation unit. Draw each character with a finger, stylus, or mouse.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.3/dist/hanzi-writer.min.js"></script>
+<script>
+(function(){
+  var CHAR_DATA = {"心": {"strokes": ["M 171 459 Q 147 381 112 311 Q 91 269 117 230 Q 129 209 152 227 Q 177 249 190 289 Q 211 344 208 392 Q 211 432 199 462 Q 192 472 185 472 Q 175 469 171 459 Z", "M 863 228 Q 859 243 834 262 Q 797 290 698 391 Q 691 398 685 398 Q 682 397 684 389 Q 708 338 732 281 Q 742 257 728 241 Q 689 208 550 226 Q 441 244 397 323 Q 370 377 355 435 Q 348 463 324 476 Q 306 486 299 478 Q 295 474 302 454 Q 312 429 335 363 Q 372 224 476 178 Q 495 171 521 163 Q 710 115 851 212 Q 866 221 863 228 Z", "M 441 617 Q 475 578 511 531 Q 524 515 541 513 Q 553 512 561 525 Q 568 541 564 574 Q 560 619 444 670 Q 428 677 420 675 Q 414 672 414 658 Q 415 645 441 617 Z", "M 760 585 Q 814 536 877 465 Q 896 441 914 437 Q 924 436 933 447 Q 948 463 932 514 Q 922 563 840 592 Q 789 613 761 621 Q 751 627 748 612 Q 747 596 760 585 Z"], "medians": [[[185, 462], [176, 372], [133, 236]], [[306, 473], [333, 435], [369, 327], [400, 274], [429, 244], [471, 215], [538, 193], [634, 183], [693, 187], [748, 205], [784, 234], [773, 267], [691, 393]], [[425, 667], [520, 581], [542, 534]], [[761, 607], [838, 558], [886, 518], [915, 457]]]}, "快": {"strokes": ["M 143 510 Q 130 449 107 392 Q 95 355 118 323 Q 130 307 148 323 Q 193 377 181 456 Q 180 490 168 515 Q 161 522 155 522 Q 146 519 143 510 Z", "M 312 518 Q 319 511 333 502 Q 357 483 382 461 Q 395 451 408 452 Q 418 453 421 464 Q 425 477 415 503 Q 409 519 383 530 Q 323 546 313 543 C 288 540 290 538 312 518 Z", "M 313 543 Q 313 646 334 716 Q 349 741 323 759 Q 307 771 278 789 Q 254 807 233 791 Q 229 787 234 770 Q 265 722 266 674 Q 267 604 268 523 Q 264 384 259 231 Q 255 155 234 85 Q 222 45 248 -18 Q 254 -36 262 -39 Q 268 -46 276 -37 Q 303 -21 304 45 Q 303 93 312 518 L 313 543 Z", "M 749 404 Q 773 506 815 544 Q 833 565 816 584 Q 734 641 679 613 Q 640 598 606 587 L 556 575 Q 501 563 443 555 Q 424 554 427 543 Q 430 533 450 528 Q 478 516 515 529 Q 534 533 555 537 L 603 547 Q 697 574 712 562 Q 724 550 721 526 Q 709 453 693 394 C 685 365 742 375 749 404 Z", "M 543 372 Q 459 362 368 349 Q 347 348 363 331 Q 376 318 394 313 Q 413 307 430 312 Q 481 327 539 334 L 589 343 Q 643 361 919 361 Q 938 361 943 370 Q 949 380 932 394 Q 875 436 803 415 Q 778 411 749 404 L 693 394 Q 630 388 592 379 L 543 372 Z", "M 555 537 Q 552 455 543 372 L 539 334 Q 518 181 434 103 Q 394 70 334 35 Q 321 28 321 23 Q 322 19 334 19 Q 350 15 389 29 Q 524 72 566 218 Q 576 251 582 290 L 588 336 Q 588 340 589 343 L 592 379 Q 598 466 603 547 L 606 587 Q 609 648 634 729 Q 641 744 631 755 Q 607 774 567 787 Q 542 794 532 787 Q 522 780 530 767 Q 552 728 555 679 Q 556 627 556 575 L 555 537 Z", "M 582 290 Q 759 2 812 0 Q 882 4 942 9 Q 967 10 968 17 Q 969 24 941 39 Q 791 105 732 167 Q 648 257 588 336 C 570 360 566 316 582 290 Z"], "medians": [[[157, 510], [153, 429], [133, 333]], [[316, 537], [329, 525], [378, 502], [407, 466]], [[245, 784], [297, 729], [283, 212], [267, 62], [267, -26]], [[438, 544], [503, 544], [611, 566], [695, 592], [734, 587], [765, 558], [728, 427], [699, 399]], [[365, 340], [413, 332], [625, 369], [843, 392], [889, 388], [931, 376]], [[539, 776], [566, 758], [590, 728], [568, 375], [547, 245], [521, 174], [473, 105], [405, 55], [328, 23]], [[589, 328], [605, 284], [663, 205], [716, 139], [790, 67], [818, 47], [962, 18]]], "radStrokes": [0, 1, 2]}, "麼": {"strokes": ["M492,815C506,805 519,791 535,776C545,768 556,764 568,764C576,765 581,770 584,780C586,791 585,809 577,829C569,849 537,860 484,868C471,870 464,870 460,867C456,865 454,860 457,849C459,842 472,831 492,815Z", "M281,669C324,675 428,686 458,690C603,712 710,731 777,747C813,757 791,780 762,784C736,789 685,776 620,760C502,732 334,708 221,708C164,708 197,684 228,672C244,665 264,666 281,669Z", "M228,672C241,649 235,617 234,578C225,379 154,189 51,28C37,8 50,0 65,14C194,139 257,333 284,515C295,592 301,609 304,630C305,642 301,655 281,669C267,680 220,688 228,672Z", "M446,547C463,551 480,556 500,560C516,564 525,567 528,569C542,588 511,596 501,597C474,602 460,593 448,589C423,581 423,581 410,577C373,566 341,565 326,562C305,559 302,552 318,544C334,535 372,532 412,540C435,545 435,545 446,547Z", "M412,540C414,498 409,408 404,388C399,374 402,356 413,329C421,309 432,317 438,331C447,352 444,370 444,389C443,425 443,495 446,547C447,575 447,575 448,589C449,611 459,626 457,637C455,643 441,650 421,662C407,671 386,666 396,651C412,625 408,604 410,577C411,552 411,552 412,540Z", "M335,504C348,452 318,378 279,333C268,321 269,314 287,321C335,347 358,400 378,448C386,465 390,479 388,484C383,495 371,501 361,510C349,520 330,521 335,504Z", "M477,511C482,498 486,461 483,410C482,400 485,386 500,375C510,368 539,365 557,372C584,382 578,409 562,404C543,399 515,402 515,425C516,449 518,474 523,492C525,503 521,509 514,514C493,530 468,534 477,511Z", "M750,568C776,574 803,581 831,586C851,591 862,595 866,598C881,618 846,630 835,630C817,631 794,627 751,613C723,604 723,604 709,600C682,592 652,591 621,586C598,583 594,574 612,565C644,548 671,551 710,559C737,565 737,565 750,568Z", "M710,559C711,488 707,437 703,418C698,399 701,377 713,352C723,329 735,340 743,356C745,362 746,383 746,419C747,453 748,507 750,568C751,598 751,598 751,613C751,644 767,658 762,674C760,680 744,688 721,702C706,711 682,707 693,690C700,680 707,651 709,600C710,573 710,573 710,559Z", "M634,498C634,473 632,434 603,367C592,344 603,345 618,359C644,386 663,442 679,473C688,493 692,498 684,509C680,514 673,520 662,527C630,547 632,531 634,498Z", "M792,485C787,423 786,392 807,370C825,350 856,348 878,350C894,353 905,361 909,364C919,374 924,385 915,391C902,398 894,396 878,390C861,385 848,390 839,398C829,407 822,419 823,442C823,465 826,492 833,521C835,530 833,536 828,541C821,548 811,554 802,557C794,560 789,560 786,557C783,556 782,550 785,541C791,523 793,504 792,485Z", "M542,178C501,180 463,181 430,182C418,183 416,187 423,192C458,223 493,247 525,268C536,276 540,283 541,287C541,296 532,313 516,338C508,349 499,355 488,355C480,356 478,351 479,340C480,319 456,280 405,227C394,217 379,207 362,198C349,192 342,184 342,176C342,164 346,153 353,139C357,132 364,129 374,132C396,141 443,148 514,153C527,153 555,178 542,178Z", "M669,74C604,68 534,57 459,42C446,40 444,43 454,51C561,148 638,207 685,230C694,235 698,243 696,250C691,266 679,282 659,300C649,309 640,313 634,312C626,312 622,306 621,294C617,268 580,212 542,178C523,161 523,161 514,153C432,81 383,44 369,39C358,36 353,27 353,17C352,7 360,-4 376,-22C382,-30 389,-32 402,-26C478,12 571,37 681,53C689,55 677,74 669,74Z", "M681,53C714,-4 735,-35 743,-39C747,-41 754,-39 762,-34C772,-26 775,-6 774,25C773,43 769,59 760,71C751,84 734,95 712,109C684,126 665,138 652,145C645,150 641,149 638,140C635,132 636,124 643,113C651,102 660,90 669,74C677,60 677,60 681,53Z"], "medians": [[[460, 861], [539, 821], [572, 770]], [[198, 700], [349, 696], [791, 761]], [[236, 674], [270, 634], [222, 347], [145, 152], [53, 14]], [[317, 554], [527, 580]], [[403, 656], [432, 625], [423, 324]], [[342, 513], [356, 445], [281, 325]], [[484, 520], [503, 401], [571, 392]], [[607, 577], [864, 605]], [[698, 701], [733, 662], [724, 347]], [[641, 527], [660, 487], [605, 359]], [[791, 555], [812, 524], [815, 393], [859, 369], [913, 386]], [[488, 352], [500, 290], [382, 171], [537, 172]], [[632, 306], [650, 248], [402, 26], [419, 7], [678, 61]], [[646, 140], [723, 57], [759, -34]]]}, "么": {"strokes": ["M 464 772 Q 476 682 334 526 Q 256 448 174 381 Q 164 375 176 372 Q 263 387 398 520 Q 401 524 405 528 Q 456 583 534 696 Q 544 711 552 717 Q 559 721 559 734 Q 558 744 544 759 Q 505 795 471 788 Q 461 787 464 772 Z", "M 727 196 Q 574 180 407 145 Q 391 139 386 144 Q 382 153 397 172 Q 644 446 695 491 Q 713 501 707 518 Q 701 536 644 574 Q 625 587 611 584 Q 593 580 597 551 Q 603 515 574 472 Q 498 343 376 218 Q 342 178 273 142 Q 252 129 256 114 Q 260 92 290 62 Q 302 46 321 58 Q 390 107 741 166 Q 742 166 744 166 C 774 171 757 199 727 196 Z", "M 744 166 Q 807 61 814 57 Q 823 53 834 62 Q 850 72 848 123 Q 849 192 672 329 Q 665 336 658 324 Q 654 309 663 296 Q 694 251 727 196 L 744 166 Z"], "medians": [[[473, 778], [488, 766], [507, 733], [463, 647], [428, 597], [330, 487], [231, 407], [180, 378]], [[615, 566], [642, 521], [636, 496], [524, 348], [361, 166], [341, 124], [393, 116], [543, 151], [692, 176], [718, 179], [728, 168]], [[669, 316], [747, 226], [802, 146], [821, 95], [819, 65]]], "radStrokes": [0]}, "不": {"strokes": ["M 606 682 Q 630 694 746 694 Q 878 694 880 695 Q 880 696 882 697 Q 889 710 877 722 Q 804 782 746 759 Q 467 702 200 680 Q 193 681 188 680 Q 175 679 174 668 Q 173 655 192 642 Q 210 630 241 619 Q 251 615 270 624 Q 337 646 474 667 Q 504 673 560 677 L 606 682 Z", "M 560 677 Q 559 677 560 676 Q 561 649 550 612 Q 528 567 504 528 L 470 480 Q 463 473 457 464 Q 399 388 333 332 Q 269 274 111 165 Q 101 161 112 156 Q 157 156 322 262 Q 409 329 484 417 L 539 483 Q 635 609 644 615 Q 654 621 652 632 Q 651 644 639 658 Q 624 674 606 682 C 580 697 561 707 560 677 Z", "M 504 528 Q 489 550 466 559 Q 454 560 450 553 Q 444 544 470 480 L 484 417 Q 490 222 461 87 Q 448 38 485 -17 Q 486 -20 490 -23 Q 511 -41 523 -11 Q 539 35 539 86 Q 529 386 536 454 Q 540 472 539 483 C 539 486 523 505 504 528 Z", "M 632 397 Q 731 321 850 208 Q 868 189 884 184 Q 894 184 901 195 Q 913 210 897 255 Q 873 327 631 429 Q 621 435 620 421 Q 620 406 632 397 Z"], "medians": [[[187, 667], [251, 651], [473, 690], [771, 730], [840, 720], [868, 709], [879, 698]], [[568, 677], [601, 633], [527, 510], [451, 416], [369, 331], [300, 273], [168, 187], [115, 161]], [[459, 548], [477, 527], [506, 472], [509, 231], [498, 73], [503, -13]], [[632, 417], [751, 340], [825, 284], [863, 245], [884, 200]]], "radStrokes": [0]}, "慢": {"strokes": ["M 125 556 Q 109 489 81 426 Q 66 393 88 363 Q 97 347 115 362 Q 163 407 157 505 Q 158 536 147 559 Q 141 566 136 567 Q 129 564 125 556 Z", "M 282 601 Q 303 589 358 544 Q 371 534 384 535 Q 394 536 397 548 Q 400 561 391 587 Q 378 620 291 631 Q 287 632 284 631 C 254 629 256 616 282 601 Z", "M 284 631 Q 288 692 301 738 Q 310 753 307 766 Q 300 776 246 809 Q 224 825 203 811 Q 199 807 205 791 Q 236 740 238 664 Q 238 243 220 151 Q 214 123 206 93 Q 196 56 220 -6 Q 227 -24 235 -27 Q 241 -34 248 -25 Q 275 -9 275 54 Q 274 105 282 575 Q 282 588 282 601 L 284 631 Z", "M 462 781 Q 455 782 446 784 Q 436 787 432 782 Q 428 776 435 762 Q 463 704 481 606 Q 485 578 501 558 Q 517 539 522 553 Q 525 563 525 579 L 524 600 Q 523 609 521 617 Q 515 642 511 664 L 507 684 Q 497 738 496 754 C 494 776 492 776 462 781 Z", "M 686 600 Q 702 578 717 570 Q 727 563 741 582 Q 751 601 776 700 Q 783 728 806 751 Q 818 761 808 775 Q 795 791 755 815 Q 742 821 668 810 Q 667 810 563 796 Q 512 787 472 784 Q 465 784 462 781 C 433 774 467 747 496 754 Q 526 764 684 779 Q 709 780 716 772 Q 726 760 725 749 Q 710 637 691 625 C 679 609 679 609 686 600 Z", "M 511 664 Q 517 663 528 664 Q 598 676 652 682 Q 673 686 665 697 Q 655 710 633 714 Q 605 718 507 684 C 479 674 481 667 511 664 Z", "M 525 579 Q 531 578 539 579 Q 623 592 686 600 C 716 604 718 612 691 625 Q 673 640 530 601 Q 527 601 524 600 C 494 595 495 582 525 579 Z", "M 426 502 Q 416 508 386 512 Q 376 513 372 509 Q 368 505 375 490 Q 399 445 416 371 Q 420 349 433 334 Q 449 315 454 329 Q 455 336 456 348 L 455 370 Q 454 374 454 378 Q 441 444 437 470 C 432 499 432 499 426 502 Z", "M 758 385 Q 774 358 789 350 Q 798 343 813 361 Q 822 371 846 430 Q 856 458 878 482 Q 891 492 881 507 Q 868 523 828 550 Q 813 559 737 544 L 426 502 C 396 498 407 466 437 470 Q 443 470 450 471 Q 478 478 514 483 L 535 488 Q 577 495 631 502 L 674 507 Q 774 522 791 505 Q 798 498 796 490 Q 783 415 767 407 C 754 391 754 391 758 385 Z", "M 514 483 Q 517 471 518 447 Q 518 402 536 383 C 548 369 548 369 555 386 Q 555 387 556 387 Q 560 412 542 472 Q 541 482 535 488 C 516 511 507 512 514 483 Z", "M 631 502 Q 640 487 630 417 Q 627 407 627 398 C 626 368 635 377 649 403 Q 653 410 658 421 Q 680 473 685 478 Q 695 488 687 496 Q 683 502 674 507 C 648 523 619 529 631 502 Z", "M 456 348 Q 469 344 492 347 Q 643 372 758 385 C 788 388 795 395 767 407 Q 751 420 649 403 L 627 398 Q 590 394 555 386 L 536 383 Q 493 379 455 370 C 426 363 427 354 456 348 Z", "M 577 128 Q 511 62 377 32 Q 362 28 374 19 Q 380 15 422 17 Q 525 26 610 93 L 640 123 Q 674 165 706 226 Q 721 254 742 271 Q 764 286 751 301 Q 739 314 708 329 Q 687 338 599 309 Q 545 297 488 290 Q 473 290 468 283 Q 464 276 483 267 Q 520 251 571 265 Q 625 284 634 283 Q 655 279 648 258 Q 632 200 601 156 L 577 128 Z", "M 610 93 Q 691 8 771 -41 Q 795 -50 880 -30 Q 899 -24 919 -20 Q 932 -17 943 -11 Q 949 -4 937 4 Q 922 10 806 36 Q 743 49 640 123 L 601 156 Q 573 181 543 210 Q 524 231 492 233 Q 479 234 471 226 Q 467 219 477 212 Q 525 182 577 128 L 610 93 Z"], "medians": [[[136, 556], [131, 478], [106, 401], [102, 370]], [[288, 623], [356, 583], [382, 550]], [[214, 805], [242, 781], [264, 751], [257, 319], [249, 153], [239, 81], [240, -14]], [[440, 777], [472, 741], [512, 558]], [[468, 778], [502, 771], [578, 786], [703, 798], [744, 786], [763, 761], [719, 608], [723, 587]], [[515, 670], [522, 677], [576, 690], [623, 697], [656, 692]], [[528, 595], [537, 591], [685, 620]], [[380, 504], [408, 478], [444, 334]], [[434, 499], [452, 489], [751, 532], [805, 527], [818, 520], [836, 495], [794, 386], [796, 367]], [[520, 479], [533, 459], [542, 399], [550, 392]], [[638, 501], [659, 481], [651, 438], [632, 402]], [[462, 354], [477, 361], [761, 403]], [[475, 281], [544, 278], [638, 303], [676, 295], [692, 285], [647, 178], [588, 106], [500, 52], [412, 27], [379, 25]], [[480, 222], [518, 207], [643, 91], [765, 8], [795, -3], [935, -6]]], "radStrokes": [0, 1, 2]}, "怎": {"strokes": ["M 395 682 Q 470 787 471 795 Q 470 798 470 800 Q 466 813 438 836 Q 413 854 393 854 Q 374 853 382 831 Q 392 809 384 789 Q 359 725 320 664 Q 283 606 231 542 Q 221 532 219 526 Q 215 516 229 518 Q 271 522 379 661 L 395 682 Z", "M 499 648 Q 602 669 710 688 Q 762 700 770 707 Q 780 714 775 724 Q 768 736 738 744 Q 708 751 602 717 Q 479 689 395 682 C 365 679 356 678 379 661 Q 401 639 458 642 L 499 648 Z", "M 520 448 Q 520 497 521 530 L 522 552 Q 522 577 525 589 Q 532 613 523 622 Q 510 638 499 648 C 478 669 447 670 458 642 Q 473 606 478 556 Q 478 456 461 384 Q 449 344 481 301 Q 482 300 484 298 Q 500 285 510 308 Q 520 336 521 422 L 520 448 Z", "M 521 530 Q 528 526 544 528 Q 623 541 682 550 Q 707 554 697 568 Q 685 583 659 587 Q 625 591 522 552 C 494 541 493 540 521 530 Z", "M 521 422 Q 531 421 543 421 Q 634 433 701 439 Q 726 442 717 456 Q 707 472 680 477 Q 655 481 520 448 C 491 441 491 424 521 422 Z", "M 209 262 Q 185 198 151 142 Q 130 106 151 69 Q 160 50 183 65 Q 238 113 239 200 Q 243 236 235 262 Q 229 272 223 272 Q 213 271 209 262 Z", "M 867 87 Q 860 97 839 108 Q 806 124 714 185 Q 707 192 701 190 Q 698 189 701 182 Q 720 151 739 114 Q 746 99 739 88 Q 726 75 680 70 Q 613 63 543 72 Q 432 90 401 150 Q 383 184 372 224 Q 366 249 348 260 Q 332 269 326 262 Q 322 258 328 241 Q 335 225 350 176 Q 375 71 469 31 Q 487 25 511 17 Q 704 -34 832 47 Q 842 56 856 67 Q 869 76 867 87 Z", "M 515 238 Q 558 181 592 161 Q 605 157 615 169 Q 622 181 621 196 Q 611 241 529 272 Q 514 278 506 275 Q 500 274 501 263 Q 502 253 515 238 Z", "M 754 300 Q 815 263 890 206 Q 909 188 926 187 Q 935 187 941 199 Q 951 215 929 256 Q 910 305 750 331 Q 740 335 740 322 Q 741 309 754 300 Z"], "medians": [[[392, 840], [410, 825], [426, 795], [394, 731], [287, 580], [227, 526]], [[387, 663], [449, 664], [694, 714], [764, 718]], [[466, 638], [491, 622], [499, 606], [499, 486], [488, 355], [495, 309]], [[527, 535], [559, 549], [638, 565], [687, 561]], [[527, 429], [558, 442], [655, 456], [683, 457], [706, 450]], [[223, 259], [203, 165], [166, 74]], [[333, 257], [349, 234], [381, 143], [405, 107], [447, 72], [498, 51], [547, 40], [612, 33], [684, 34], [749, 49], [781, 70], [787, 80], [779, 101], [707, 186]], [[512, 266], [590, 199], [598, 180]], [[752, 319], [881, 257], [906, 234], [924, 204]]], "radStrokes": [5, 6, 7, 8]}, "小": {"strokes": ["M 499 695 Q 503 661 501 132 Q 500 110 488 101 Q 478 92 448 100 Q 414 107 383 113 Q 347 123 351 112 Q 352 105 375 91 Q 456 42 479 10 Q 504 -26 523 -25 Q 538 -26 552 11 Q 568 57 564 133 Q 531 583 572 723 Q 590 754 532 778 Q 498 797 477 789 Q 459 782 475 759 Q 497 731 499 695 Z", "M 266 475 Q 223 408 170 349 Q 160 339 155 320 Q 148 292 154 273 Q 158 251 185 261 Q 213 274 237 308 Q 273 357 284 404 Q 297 441 293 470 Q 289 480 283 484 Q 273 484 266 475 Z", "M 706 472 Q 769 411 842 323 Q 860 299 878 293 Q 888 292 897 303 Q 913 318 900 370 Q 887 431 709 508 Q 699 515 696 500 Q 695 484 706 472 Z"], "medians": [[[484, 773], [501, 765], [533, 730], [525, 545], [532, 191], [528, 90], [510, 54], [459, 68], [358, 112]], [[280, 476], [254, 405], [170, 274]], [[709, 494], [800, 425], [848, 380], [866, 353], [879, 311]]]}};
+  var WORDS = [{"simp": ["怎", "么"], "trad": ["怎", "麼"], "pinyin": "zěnme", "english": "how"}, {"simp": ["快"], "trad": ["快"], "pinyin": "kuài", "english": "fast"}, {"simp": ["慢"], "trad": ["慢"], "pinyin": "màn", "english": "slow"}, {"simp": ["小", "心"], "trad": ["小", "心"], "pinyin": "xiǎoxīn", "english": "careful"}, {"simp": ["不", "小", "心"], "trad": ["不", "小", "心"], "pinyin": "bù xiǎoxīn", "english": "careless"}];
+  var state = { index: 0, mode: "simplified" };
+  var writers = [];
+
+  function charDataLoader(char, onLoad){ onLoad(CHAR_DATA[char]); }
+
+  function render(){
+    var word = WORDS[state.index];
+    var chars = word[state.mode === "simplified" ? "simp" : "trad"];
+    var row = document.getElementById("charRow");
+    row.innerHTML = "";
+    writers = [];
+    var boxSize = chars.length === 1 ? 300 : chars.length === 2 ? 230 : chars.length === 3 ? 190 : 150;
+    var boxItems = chars.map(function(ch){
+      var box = document.createElement("div");
+      box.className = "char-box";
+      box.style.width = boxSize + "px";
+      box.style.height = boxSize + "px";
+      row.appendChild(box);
+      return { ch: ch, box: box };
+    });
+    boxItems.forEach(function(item){
+      var size = boxSize;
+      var writer = HanziWriter.create(item.box, item.ch, {
+        width: size, height: size, padding: Math.round(size * 0.08),
+        strokeAnimationSpeed: 1, delayBetweenStrokes: 150, showOutline: true,
+        strokeColor: getComputedColor("--ink"), outlineColor: getComputedColor("--grid-strong"),
+        drawingWidth: 32, charDataLoader: charDataLoader,
+        onLoadCharDataError: function(){
+          item.box.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100%;font-size:12px;color:var(--muted);text-align:center;padding:8px;'>No stroke data for this character yet</div>";
+        }
+      });
+      writer.quiz({ onComplete: function(){ item.box.classList.add("done"); } });
+      writers.push({ writer: writer, box: item.box });
+    });
+    document.getElementById("pinyin").textContent = word.pinyin;
+    document.getElementById("english").textContent = word.english;
+    document.getElementById("progress").textContent = (state.index + 1) + " / " + WORDS.length;
+    document.getElementById("prevBtn").disabled = state.index === 0;
+    document.getElementById("nextBtn").disabled = state.index === WORDS.length - 1;
+  }
+
+  function getComputedColor(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || "#232a36";
+  }
+
+  document.getElementById("prevBtn").addEventListener("click", function(){ if (state.index > 0){ state.index -= 1; render(); } });
+  document.getElementById("nextBtn").addEventListener("click", function(){ if (state.index < WORDS.length - 1){ state.index += 1; render(); } });
+  document.getElementById("showBtn").addEventListener("click", function(){
+    writers.forEach(function(w){
+      w.box.classList.remove("done");
+      w.writer.animateCharacter({ onComplete: function(){ w.writer.quiz({ onComplete: function(){ w.box.classList.add("done"); } }); } });
+    });
+  });
+  document.getElementById("scriptToggle").addEventListener("click", function(e){
+    var btn = e.target.closest("button[data-mode]");
+    if (!btn) return;
+    state.mode = btn.getAttribute("data-mode");
+    document.querySelectorAll("#scriptToggle button").forEach(function(b){ b.classList.toggle("active", b === btn); });
+    render();
+  });
+
+  render();
+})();
+</script>
