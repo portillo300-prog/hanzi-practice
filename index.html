@@ -54,7 +54,7 @@
   .card { background: var(--paper-raised); border-radius: 20px; padding: 26px 22px 22px; box-shadow: 0 1px 3px var(--shadow), 0 12px 28px -18px var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .char-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   .char-box {
-    position: relative; flex: 1 1 220px; max-width: 320px; aspect-ratio: 1 / 1; border-radius: 14px; border: 1.5px solid var(--grid-strong);
+    position: relative; border-radius: 14px; border: 1.5px solid var(--grid-strong);
     background:
       linear-gradient(45deg, transparent calc(50% - 0.75px), var(--grid) calc(50% - 0.75px), var(--grid) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
       linear-gradient(-45deg, transparent calc(50% - 0.75px), var(--grid) calc(50% - 0.75px), var(--grid) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
@@ -146,14 +146,17 @@
     var row = document.getElementById("charRow");
     row.innerHTML = "";
     writers = [];
+    var boxSize = chars.length === 1 ? 300 : (chars.length === 2 ? 230 : 180);
     var boxItems = chars.map(function(ch){
       var box = document.createElement("div");
       box.className = "char-box";
+      box.style.width = boxSize + "px";
+      box.style.height = boxSize + "px";
       row.appendChild(box);
       return { ch: ch, box: box };
     });
     boxItems.forEach(function(item){
-      var size = Math.round(item.box.getBoundingClientRect().width) || 220;
+      var size = boxSize;
       var writer = HanziWriter.create(item.box, item.ch, {
         width: size, height: size, padding: Math.round(size * 0.08),
         strokeAnimationSpeed: 1, delayBetweenStrokes: 150, showOutline: true,
