@@ -6,6 +6,7 @@
                    (e.g. "xi3 huan5" shows as "xǐ huan"; v = ü),
               alt = optional second pinyin spelling shown after a slash,
               en = English meaning.
+  Each lesson also has a `sticker` emoji and an `accent` color (used on the home screen and celebrations).
 
   After editing, run:  node scripts/build.mjs   (fetches stroke data + refreshes the offline cache)
 */
@@ -15,6 +16,8 @@ window.CONTENT = {
     {
       id: 'l1',
       number: 1,
+      sticker: '🐼',          // sticker she earns for this lesson
+      accent: '#4fd1c5',      // the lesson's color
       title: { s: '在中文学校', t: '在中文學校' },
       py: 'zai4 zhong1 wen2 xue2 xiao4',
       en: 'At a Chinese School',
@@ -46,6 +49,8 @@ window.CONTENT = {
     {
       id: 'l3',
       number: 3,
+      sticker: '🎒',
+      accent: '#ff8a5b',
       title: { s: '放学了', t: '放學了' },
       py: 'fang4 xue2 le5',
       en: 'Class Is Over',

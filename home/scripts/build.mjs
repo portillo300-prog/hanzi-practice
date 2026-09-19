@@ -62,10 +62,17 @@ fs.writeFileSync(path.join(root, 'strokes.js'), 'window.STROKES = ' + JSON.strin
 console.log(`strokes.js: ${Object.keys(out).length} characters (${[...need.values()].filter((k) => k === 't').length} traditional-only)`);
 
 // stamp a version so devices refresh their offline copy
-const files = ['index.html', 'styles.css', 'app.js', 'content.js', 'strokes.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
+const audioFiles = fs.existsSync(path.join(root, 'audio')) ? fs.readdirSync(path.join(root, 'audio')).filter((f) => f.endsWith('.m4a')).sort().map((f) => 'audio/' + f) : [];
+const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
+const files = [...core, ...audioFiles];
 const h = crypto.createHash('sha1');
 for (const f of files) h.update(fs.readFileSync(path.join(root, f)));
 const version = h.digest('hex').slice(0, 10);
 const swPath = path.join(root, 'sw.js');
-fs.writeFileSync(swPath, fs.readFileSync(swPath, 'utf8').replace(/const VERSION = '[^']*';/, `const VERSION = '${version}';`));
+const assets = ['./', ...core.map((f) => './' + f), './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', ...audioFiles.map((f) => './' + f)];
+let sw = fs.readFileSync(swPath, 'utf8');
+sw = sw.replace(/const VERSION = '[^']*';/, `const VERSION = '${version}';`);
+sw = sw.replace(/const ASSETS = \[[\s\S]*?\];/, 'const ASSETS = [\n' + assets.map((a) => `  '${a}'`).join(',\n') + '\n];');
+fs.writeFileSync(swPath, sw);
+console.log(`offline cache: ${assets.length} files (${audioFiles.length} audio clips)`);
 console.log('service worker version:', version);
