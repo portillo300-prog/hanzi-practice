@@ -81,7 +81,12 @@
   };
 
   /* ---------- confetti ---------- */
-  var COLORS = ['#4fd1c5', '#ffd166', '#ff6b6b', '#5aa9ff', '#62d98b', '#c792ea', '#ffb347', '#ffffff'];
+  var PALETTES = {
+    normal: ['#4fd1c5', '#ffd166', '#ff6b6b', '#5aa9ff', '#62d98b', '#c792ea', '#ffb347', '#ffffff'],
+    elena: ['#ff6fa8', '#ffb38a', '#ffd166', '#ff8fb8', '#c9a7ff', '#7fd8b0', '#ff9a76', '#ffc2d9']
+  };
+  var COLORS = PALETTES.normal;
+  FX.setTheme = function (t) { COLORS = PALETTES[t] || PALETTES.normal; };
   FX.confetti = function (o) {
     o = o || {};
     if (FX.reduced()) return;

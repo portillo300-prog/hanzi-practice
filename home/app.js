@@ -19,7 +19,17 @@
   var done = store.get('done', {});          // { "l1:在": true }
   var badges = store.get('badges', {});      // { l1: { writer: true, quiz: 3 } }
   var soundOn = store.get('sound', true);
+  var theme = store.get('theme', 'normal');  // 'normal' | 'elena'
   FX.setSound(soundOn);
+  function applyTheme() {
+    if (theme === 'elena') document.documentElement.setAttribute('data-theme', 'elena');
+    else document.documentElement.removeAttribute('data-theme');
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', theme === 'elena' ? '#ffe6ee' : '#0e1116');
+    FX.setTheme(theme);
+  }
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  applyTheme();
 
   /* ---------- content ---------- */
   var lessons = C.lessons.map(function (L) {
@@ -27,6 +37,7 @@
       .concat(L.words.map(function (w) { return Object.assign({ kind: 'w' }, w); }));
     return Object.assign({ accent: '#4fd1c5', sticker: '⭐' }, L, { items: items });
   });
+  function acc(L) { return theme === 'elena' ? (L.accentElena || '#e85a94') : L.accent; }
   function keyOf(L, it) { return L.id + ':' + it.s; }
   function textOf(it) { return script === 't' ? (it.t || it.s) : it.s; }
   function titleOf(L) { return script === 't' ? L.title.t : L.title.s; }
@@ -81,10 +92,24 @@
       '<button data-script="s" class="' + (script === 's' ? 'on' : '') + '" aria-label="Simplified">简</button>' +
       '<button data-script="t" class="' + (script === 't' ? 'on' : '') + '" aria-label="Traditional">繁</button></div>';
   }
+  function themeSeg() {
+    return '<div class="seg theme" role="group" aria-label="Color style">' +
+      '<button data-theme-btn="normal" class="' + (theme === 'normal' ? 'on' : '') + '">Normal</button>' +
+      '<button data-theme-btn="elena" class="' + (theme === 'elena' ? 'on' : '') + '">🌸 Elena<span class="long"> style</span></button></div>';
+  }
   function soundBtn() { return '<button class="iconbtn" id="snd" aria-label="Sound on or off">' + (soundOn ? '🔊' : '🔇') + '</button>'; }
   function bindTop(after) {
     Array.prototype.forEach.call(app.querySelectorAll('[data-script]'), function (b) {
       b.onclick = function () { script = b.getAttribute('data-script'); store.set('script', script); after(); };
+    });
+    Array.prototype.forEach.call(app.querySelectorAll('[data-theme-btn]'), function (b) {
+      b.onclick = function () {
+        var t = b.getAttribute('data-theme-btn');
+        if (t === theme) return;
+        theme = t; store.set('theme', theme); applyTheme();
+        if (theme === 'elena') FX.pop();
+        after();
+      };
     });
     var s = $('snd');
     if (s) s.onclick = function () {
@@ -154,7 +179,7 @@
     b.writer = true; store.set('badges', badges);
     later(function () {
       showWin({
-        emoji: '🎉', title: 'Lesson complete!', accent: L.accent,
+        emoji: '🎉', title: 'Lesson complete!', accent: acc(L),
         lines: ['You wrote every character and word in Lesson ' + L.number + '!'],
         sticker: { emoji: L.sticker, label: 'New sticker: Star Writer ✍️' },
         primary: { label: 'Keep going', fn: function () { go('#/l/' + L.id); } },
@@ -173,8 +198,8 @@
   function renderHome() {
     var cards = lessons.map(function (L, idx) {
       var n = doneCount(L), b = badges[L.id] || {};
-      return '<button class="lesson-card" style="--acc:' + L.accent + ';animation-delay:' + (idx * 0.08) + 's" data-go="#/l/' + L.id + '">' +
-        ringHTML(n / L.items.length, L.accent, L.sticker) +
+      return '<button class="lesson-card" style="--acc:' + acc(L) + ';animation-delay:' + (idx * 0.08) + 's" data-go="#/l/' + L.id + '">' +
+        ringHTML(n / L.items.length, acc(L), L.sticker) +
         '<span class="lc-body">' +
         '<span class="badge">Lesson ' + L.number + '</span>' +
         '<span class="zh">' + row(titleOf(L)) + '</span>' +
@@ -187,7 +212,7 @@
     }).join('');
     app.innerHTML =
       '<div class="screen">' +
-      '<div class="topbar"><span class="spacer"></span>' + soundBtn() + scriptToggle() + '</div>' +
+      '<div class="topbar">' + themeSeg() + '<span class="spacer"></span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<div class="hero"><div class="logo">' + row(script === 't' ? C.appTitle.t : C.appTitle.s) + '</div><div class="sub">Hanzi Practice</div></div>' +
       '<div class="lessons">' + cards + '</div>' +
       '<div class="legend"><span><i class="dot1"></i>1st tone</span><span><i class="dot2"></i>2nd</span><span><i class="dot3"></i>3rd</span><span><i class="dot4"></i>4th</span><span><i class="dot5"></i>neutral</span></div>' +
@@ -207,8 +232,8 @@
     var nc = L.characters.length;
     var stars = b.quiz ? '⭐'.repeat(b.quiz) : '';
     app.innerHTML =
-      '<div class="screen" style="--acc:' + L.accent + '">' +
-      '<div class="topbar"><button class="btn" data-go="#/">‹ Home</button><span class="spacer"></span>' + soundBtn() + scriptToggle() + '</div>' +
+      '<div class="screen" style="--acc:' + acc(L) + '">' +
+      '<div class="topbar"><button class="btn" data-go="#/">‹ Home</button>' + themeSeg() + '<span class="spacer"></span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<div class="lesson-head"><div class="zh">' + row(titleOf(L)) + '</div>' + pinyinHTML(L.py, null, 'sm') + '<div class="en">Lesson ' + L.number + ' · ' + L.en + '</div></div>' +
       '<div class="modebar"><div class="seg" role="group" aria-label="Mode">' +
       '<button data-mode="write" class="' + (mode === 'write' ? 'on' : '') + '">✏️ Write</button>' +
@@ -245,8 +270,8 @@
       ? '<div class="wordslots">' + chars.map(function (c, i) { return '<button class="slot" data-ci="' + i + '" aria-label="Character ' + (i + 1) + '">' + glyph(c) + '</button>'; }).join('') + '</div>'
       : '';
     app.innerHTML =
-      '<div class="practice" style="--acc:' + L.accent + '">' +
-      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + soundBtn() + scriptToggle() + '</div>' +
+      '<div class="practice" style="--acc:' + acc(L) + '">' +
+      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<div class="info">' + slots + '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + speakBtn(it) + '</div><div class="meaning">' + it.en + '</div><div class="hint" id="hint"></div></div>' +
       '<div class="boardwrap" id="bw"><div class="board" id="board"></div></div>' +
       '<div class="controls">' +
@@ -289,11 +314,11 @@
       padding: Math.round(size * 0.07),
       showOutline: outline,
       showCharacter: false,
-      strokeColor: '#f1f4f9',
-      outlineColor: '#3b4456',
-      highlightColor: '#4fd1c5',
-      highlightCompleteColor: '#ffd166',
-      drawingColor: '#ffffff',
+      strokeColor: cssVar('--stroke'),
+      outlineColor: cssVar('--outline-c'),
+      highlightColor: cssVar('--hl'),
+      highlightCompleteColor: cssVar('--hlc'),
+      drawingColor: cssVar('--draw'),
       drawingWidth: Math.max(10, Math.round(size * 0.035)),
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 250,
@@ -394,8 +419,8 @@
     var t = textOf(it);
     var shown = false;
     app.innerHTML =
-      '<div class="read" style="--acc:' + L.accent + '">' +
-      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + soundBtn() + scriptToggle() + '</div>' +
+      '<div class="read" style="--acc:' + acc(L) + '">' +
+      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<button class="card" id="card" style="--n:' + Array.from(t).length + '" aria-label="Tap to show pinyin and meaning">' + row(t) + '</button>' +
       '<div class="reveal" id="rev"></div>' +
       '<div class="controls">' +
@@ -481,7 +506,7 @@
       ctrl = '<div class="controls two"><button class="btn" id="peek"><span class="ico">💡</span>Peek</button><button class="btn" id="qagain"><span class="ico">↺</span>Try again</button></div>';
     }
     app.innerHTML =
-      '<div class="practice quiz" style="--acc:' + L.accent + '">' +
+      '<div class="practice quiz" style="--acc:' + acc(L) + '">' +
       '<div class="topbar"><button class="btn" id="qquit">✕ Quit</button><span class="title">' + dotsHTML() + '</span>' + soundBtn() + '</div>' +
       '<div class="info"><div class="qlabel">' + label + '</div>' + info + (q.t === 'write' ? '' : '<div class="hint" id="hint"></div>') + '</div>' +
       '<div class="boardwrap" id="bw">' + body + '</div>' + ctrl + '</div>';
@@ -566,7 +591,7 @@
               'You finished the quiz! Every try makes you stronger.';
     Q = null;
     showWin({
-      emoji: stars === 3 ? '🏆' : '🎉', title: 'Well done!', accent: L.accent, stars: stars,
+      emoji: stars === 3 ? '🏆' : '🎉', title: 'Well done!', accent: acc(L), stars: stars,
       lines: [msg],
       sticker: isNew ? { emoji: '🏆', label: 'New badge: Quiz Champion!' } : null,
       primary: { label: 'Play again', fn: function () { go('#/q/' + L.id); } },
@@ -590,7 +615,7 @@
     }).join('');
     app.innerHTML =
       '<div class="screen about">' +
-      '<div class="topbar"><button class="btn" data-go="#/">‹ Home</button><span class="title">About</span></div>' +
+      '<div class="topbar"><button class="btn" data-go="#/">‹ Home</button>' + themeSeg() + '</div>' +
       '<div class="acard"><h2>写汉字 Hanzi Practice</h2><p>A little app for practicing Chinese characters: trace each stroke in the right order, see the pinyin with tone colors, and learn what it means. It works with no internet, and nothing you do here leaves the device — no accounts, no tracking.</p></div>' +
       '<div class="acard"><h2>Voice recordings</h2><p>The spoken characters and words are real recordings by native speakers, shared on Wikimedia Commons (Lingua Libre and the Chinese pronunciation set) under Creative Commons licenses. Thank you to everyone who lent their voice! Tap a character to see its recording page.</p>' +
       (speakers || '<p class="muted">Audio is coming soon.</p>') + '</div>' +
