@@ -22,5 +22,15 @@ simplified/traditional toggle, and read-only flashcards. No accounts, no trackin
 ## Install on an iPad
 Open the app's link in **Safari** → Share → **Add to Home Screen**. Open it once with internet; after that it works offline.
 
+## Voice clips
+`FFMPEG=/path/to/ffmpeg node scripts/audio.mjs probe` (coverage report), then `... fetch` (slow, polite downloads from Wikimedia Commons;
+trims, normalizes, converts to m4a, writes `audio-manifest.js` with speaker credits shown on the About screen). Then `node scripts/build.mjs`.
+Items with no recording simply get no 🔊 button (currently: 歌 欢 在学校 写字 画画儿 儿歌 放学 放心 — a family member can record these).
+Clips are matched by Commons file label, not verified by ear.
+
+## What's in it
+Celebrations (shuffled cheers, confetti, sounds with a mute button), stickers + badges per lesson, Mini Quiz (8 questions incl. write-from-memory),
+Read flashcards, About & credits page.
+
 ## Not built yet (ideas)
-Audio button per card (an add-on: pre-recorded mp3s per character/word + a 🔊 button next to the pinyin), radical browser (Pleco-style: characters by radical, radical → characters).
+Radical browser (Pleco-style: characters by radical, radical to characters), a mascot, more lessons (send photos of the book pages).
