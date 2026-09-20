@@ -23,7 +23,7 @@ fs.mkdirSync(outDir, { recursive: true });
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const UA = 'HanziHomeApp/1.0 (personal family learning app; portillo300@gmail.com)';
 const API = 'https://commons.wikimedia.org/w/api.php';
-const SPEAKERS = ['Luilui6666', 'Assassas77', 'Levi Highway (列维劳德)', 'Jouketou', 'Bakerkobe', 'Vickylin77amis', '雲角'];
+const SPEAKERS = ['Luilui6666', 'Assassas77', 'Shangkuanlc', 'Levi Highway (列维劳德)', 'Jouketou', 'Bakerkobe', 'Vickylin77amis', '雲角'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const sandbox = { window: {} };
@@ -70,20 +70,24 @@ async function fileInfo(title) {
   };
 }
 
+// Mandarin is recorded under two Lingua Libre codes. NEVER accept (yue) = Cantonese or other languages.
+const LL_CODES = ['LL-Q9192 (cmn)', 'LL-Q727694 (cmn)'];
 async function findLinguaLibre(word) {
-  for (const sp of SPEAKERS) {
-    const prefix = `LL-Q9192 (cmn)-${sp}-${word}`;
-    const d = await api({ action: 'query', list: 'allpages', apnamespace: '6', apprefix: prefix, aplimit: '5' });
-    const hit = d.query.allpages.find((p) => p.title === `File:${prefix}.wav`);
-    if (hit) { const info = await fileInfo(hit.title); if (info) return { ...info, speaker: sp, source: 'Lingua Libre' }; }
-    await sleep(250);
+  for (const code of LL_CODES) {
+    for (const sp of SPEAKERS) {
+      const prefix = `${code}-${sp}-${word}`;
+      const d = await api({ action: 'query', list: 'allpages', apnamespace: '6', apprefix: prefix, aplimit: '5' });
+      const hit = d.query.allpages.find((p) => p.title === `File:${prefix}.wav`);
+      if (hit) { const info = await fileInfo(hit.title); if (info) return { ...info, speaker: sp, source: 'Lingua Libre' }; }
+      await sleep(150);
+    }
   }
   // any other speaker: search, keep only exact single-word recordings
   const d = await api({ action: 'query', list: 'search', srnamespace: '6', srlimit: '50', srsearch: `intitle:"LL-Q9192 (cmn)" ${word}` });
-  const hit = d.query.search.find((r) => r.title.startsWith('File:LL-Q9192 (cmn)-') && r.title.endsWith(`-${word}.wav`));
+  const hit = d.query.search.find((r) => /^File:LL-Q\d+ \(cmn\)-/.test(r.title) && r.title.endsWith(`-${word}.wav`));
   if (hit) {
     const info = await fileInfo(hit.title);
-    if (info) return { ...info, speaker: hit.title.slice('File:LL-Q9192 (cmn)-'.length, -`-${word}.wav`.length), source: 'Lingua Libre' };
+    if (info) return { ...info, speaker: hit.title.replace(/^File:LL-Q\d+ \(cmn\)-/, '').slice(0, -`-${word}.wav`.length), source: 'Lingua Libre' };
   }
   return null;
 }

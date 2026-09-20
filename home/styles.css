@@ -518,3 +518,11 @@ body {
 .topbar .tools { display: flex; align-items: center; gap: 12px; margin-left: auto; }
 .topbar > .iconbtn { margin-left: auto; }
 .practice .topbar, .read .topbar { flex-wrap: nowrap; }
+
+/* sound check */
+.about .soundout { margin-top: 12px; }
+.sndline { font-size: 16px; margin: 6px 0; line-height: 1.35; color: var(--muted); }
+.sndline.ok::before { content: "✓ "; color: var(--t3); font-weight: 800; }
+.sndline.bad::before { content: "✗ "; color: var(--t1); font-weight: 800; }
+.sndline.bad { color: var(--text); }
+.sndline.tip { color: var(--faint); font-style: italic; margin-top: 12px; }

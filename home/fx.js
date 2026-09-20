@@ -26,7 +26,7 @@
   FX.unlock = ac;
   // iPad/iPhone only allow sound after a tap: wake the audio engine on the first touches
   ['pointerdown', 'touchend', 'click'].forEach(function (ev) {
-    document.addEventListener(ev, function () { ac(); }, { passive: true });
+    document.addEventListener(ev, function () { ac(); unlockPlayer(); }, { passive: true });
   });
 
   function bell(f, t, dur, vol) {
@@ -62,22 +62,95 @@
     [N.E6, N.G6, N.C7, N.G6, N.C7].forEach(function (f, i) { bell(f, t + 1.0 + i * 0.09, 0.5, 0.09); });
   };
 
-  /* recorded voice clips (decoded once, then kept in memory) */
-  var buffers = {};
-  FX.clip = function (url, force) {
-    if (!soundOn && !force) return Promise.resolve(false);
-    var c = ac(); if (!c) return Promise.resolve(false);
+  /* recorded voice clips.
+     Played through a normal audio player (an iPhone's silent switch does not mute it, and one tap "unlocks" it),
+     with Web Audio as the backup. FX.info says what happened, for the Sound check screen. */
+  var player = null, playerReady = false, silentURL = null;
+  function silentWav() {
+    if (silentURL) return silentURL;
+    var n = 400, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+    function w(o, str) { for (var i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); }
+    w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true);
+    v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true);
+    for (var i = 0; i < n; i++) v.setUint8(44 + i, 128);
+    silentURL = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+    return silentURL;
+  }
+  function unlockPlayer() {
+    if (playerReady) return;
+    try {
+      if (!player) { player = new Audio(); player.preload = 'auto'; player.setAttribute('playsinline', ''); }
+      player.src = silentWav();
+      var p = player.play();
+      if (p && p.then) p.then(function () { playerReady = true; }, function () { /* not allowed yet; try again on the next tap */ });
+      else playerReady = true;
+    } catch (e) { /* ignore */ }
+  }
+  var blobUrls = {}, buffers = {};
+  FX.info = '';
+  function blobFor(url) {
+    if (blobUrls[url]) return Promise.resolve(blobUrls[url]);
+    return fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
+      .then(function (ab) { blobUrls[url] = URL.createObjectURL(new Blob([ab], { type: 'audio/mp4' })); return blobUrls[url]; });
+  }
+  function viaPlayer(url) {
+    return blobFor(url).then(function (bu) {
+      unlockPlayer();
+      player.src = bu;
+      var p = player.play();
+      return (p && p.then ? p : Promise.resolve()).then(function () { FX.info = 'played through the audio player'; return true; });
+    });
+  }
+  function viaWebAudio(url) {
+    var c = ac();
+    if (!c) return Promise.reject(new Error('no Web Audio'));
     function go(buf) {
-      var s = c.createBufferSource(), g = c.createGain();
-      s.buffer = buf; g.gain.value = 1; s.connect(g); g.connect(master); s.start();
+      var src = c.createBufferSource(), g = c.createGain();
+      src.buffer = buf; g.gain.value = 1; src.connect(g); g.connect(master); src.start();
+      FX.info = 'played through Web Audio';
       return true;
     }
     if (buffers[url]) return Promise.resolve(go(buffers[url]));
     return fetch(url)
       .then(function (r) { return r.arrayBuffer(); })
       .then(function (ab) { return new Promise(function (res, rej) { c.decodeAudioData(ab, res, rej); }); })
-      .then(function (b) { buffers[url] = b; return go(b); })
-      .catch(function () { return false; });
+      .then(function (b) { buffers[url] = b; return go(b); });
+  }
+  FX.clip = function (url, force) {
+    if (!soundOn && !force) return Promise.resolve(false);
+    ac(); unlockPlayer();
+    return viaPlayer(url).catch(function (e1) {
+      return viaWebAudio(url).catch(function (e2) {
+        FX.info = 'could not play (' + ((e1 && e1.name) || e1) + ' / ' + ((e2 && e2.name) || e2) + ')';
+        return false;
+      });
+    });
+  };
+
+  /* Sound check: tries each step and reports what works on THIS device */
+  FX.diagnose = function (url) {
+    var lines = [];
+    function add(ok, txt) { lines.push({ ok: ok, txt: txt }); }
+    var c = ac();
+    add(!!c && c.state === 'running', 'Sound engine: ' + (c ? c.state : 'not available'));
+    var can = '';
+    try { can = document.createElement('audio').canPlayType('audio/mp4; codecs="mp4a.40.2"'); } catch (e) { /* ignore */ }
+    add(!!can, 'This device can play the voice files: ' + (can || 'no'));
+    return fetch(url)
+      .then(function (r) { add(r.ok, 'Voice file found: HTTP ' + r.status); return r.arrayBuffer(); })
+      .then(function (ab) { add(ab.byteLength > 1000, 'Voice file size: ' + ab.byteLength + ' bytes'); })
+      .then(function () { return viaPlayer(url).then(function () { add(true, 'Voice started in the audio player (you should hear it)'); }, function (e) { add(false, 'Audio player was blocked: ' + ((e && e.name) || e)); }); })
+      .then(function () {
+        var c2 = ac();
+        if (!c2) { add(false, 'Web Audio is not available'); return; }
+        return fetch(url).then(function (r) { return r.arrayBuffer(); })
+          .then(function (ab) { return new Promise(function (res, rej) { c2.decodeAudioData(ab, res, rej); }); })
+          .then(function (b) { add(true, 'Voice decodes fine: ' + b.duration.toFixed(2) + ' seconds'); }, function (e) { add(false, 'Voice could not be decoded: ' + ((e && e.message) || e)); });
+      })
+      .then(function () { var was = soundOn; soundOn = true; FX.ding(); soundOn = was; add(true, 'Chime sent (you should hear a little ding)'); return lines; })
+      .catch(function (e) { add(false, 'Problem: ' + ((e && e.message) || e)); return lines; });
   };
 
   /* ---------- confetti ---------- */
