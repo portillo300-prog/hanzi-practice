@@ -45,6 +45,40 @@
   function doneCount(L) { return L.items.filter(function (it) { return done[keyOf(L, it)]; }).length; }
   function badge(L) { return badges[L.id] || (badges[L.id] = {}); }
 
+  /* ---------- star wallet: stars are earned by learning + games, spent in the Garden shop ---------- */
+  var wallet = store.get('wallet', null);
+  if (!wallet) {   // first time: a fair starting balance for what she has already done
+    var start = 0;
+    lessons.forEach(function (L) { var bd = badges[L.id] || {}; start += doneCount(L) * 3 + (bd.writer ? 10 : 0) + (bd.quiz ? bd.quiz * 3 : 0); });
+    wallet = { bal: start, life: start };
+    store.set('wallet', wallet);
+  }
+  function updateChips() { Array.prototype.forEach.call(document.querySelectorAll('.wnum'), function (e) { e.textContent = wallet.bal; }); }
+  function toast(msg) {
+    var d = document.createElement('div'); d.className = 'toast'; d.textContent = msg;
+    document.body.appendChild(d);
+    setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 1700);
+  }
+  function earn(n) {
+    if (!(n > 0)) return;
+    wallet.bal += n; wallet.life += n; store.set('wallet', wallet);
+    toast('+' + n + ' ⭐'); updateChips();
+  }
+  function spend(n) {
+    if (wallet.bal < n) return false;
+    wallet.bal -= n; store.set('wallet', wallet); updateChips();
+    return true;
+  }
+  function walletPill() { return '<button class="wallet" data-go="#/garden/shop" aria-label="My stars">⭐ <b class="wnum">' + wallet.bal + '</b></button>'; }
+
+  /* bottom tab bar (tabs from the games / garden / words modules are added at start-up) */
+  var tabs = [{ id: 'home', icon: '✏️', label: 'Practice', href: '#/', order: 10 }];
+  function tabbar(active) {
+    return '<nav class="tabbar" aria-label="Main">' + tabs.slice().sort(function (a, b) { return a.order - b.order; }).map(function (t) {
+      return '<button class="tab' + (active === t.id ? ' on' : '') + '" data-go="' + t.href + '"><span class="ti">' + t.icon + '</span><span class="tl">' + t.label + '</span></button>';
+    }).join('') + '</nav>';
+  }
+
   /* ---------- small helpers ---------- */
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function $(id) { return document.getElementById(id); }
@@ -177,7 +211,7 @@
   function checkWriterBadge(L) {
     var b = badge(L);
     if (b.writer || doneCount(L) < L.items.length) return;
-    b.writer = true; store.set('badges', badges);
+    b.writer = true; store.set('badges', badges); earn(10);
     later(function () {
       showWin({
         emoji: '🎉', title: 'Lesson complete!', accent: acc(L),
@@ -207,18 +241,18 @@
         pinyinHTML(L.py, null, 'sm') +
         '<span class="en">' + L.en + '</span>' +
         '<span class="stats"><span>' + L.characters.length + ' characters · ' + L.words.length + ' words</span>' +
-        '<span class="stars">★ ' + n + '/' + L.items.length + '</span></span>' +
+        '<span class="stars">✓ ' + n + '/' + L.items.length + '</span></span>' +
         '<span class="bdgs"><span class="bdg' + (b.writer ? ' on' : '') + '">✍️ Writer</span><span class="bdg' + (b.quiz ? ' on' : '') + '">🏆 Quiz</span></span>' +
         '</span></button>';
     }).join('');
     app.innerHTML =
-      '<div class="screen">' +
+      '<div class="screen has-tabs">' +
       '<div class="topbar">' + themeSeg() + '<span class="spacer"></span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
-      '<div class="hero"><div class="logo">' + row(script === 't' ? C.appTitle.t : C.appTitle.s) + '</div><div class="sub">Hanzi Practice</div></div>' +
+      '<div class="hero"><div class="logo">' + row(script === 't' ? C.appTitle.t : C.appTitle.s) + '</div><div class="sub">Hanzi Practice</div>' + walletPill() + '</div>' +
       '<div class="lessons">' + cards + '</div>' +
       '<div class="legend"><span><i class="dot1"></i>1st tone</span><span><i class="dot2"></i>2nd</span><span><i class="dot3"></i>3rd</span><span><i class="dot4"></i>4th</span><span><i class="dot5"></i>neutral</span></div>' +
       '<button class="about-link" data-go="#/about">About &amp; credits</button>' +
-      '</div>';
+      tabbar('home') + '</div>';
     bindTop(renderHome);
   }
 
@@ -228,7 +262,7 @@
     function tile(it, idx) {
       var isDone = done[keyOf(L, it)];
       return '<button class="tile' + (isDone ? ' done' : '') + '" data-go="#/' + (mode === 'write' ? 'w' : 'r') + '/' + L.id + '/' + idx + '" aria-label="' + it.s + '">' +
-        row(textOf(it)) + (isDone && mode === 'write' ? '<span class="star">★</span>' : '') + '</button>';
+        row(textOf(it)) + (isDone && mode === 'write' ? '<span class="star">✓</span>' : '') + '</button>';
     }
     var nc = L.characters.length;
     var stars = b.quiz ? '⭐'.repeat(b.quiz) : '';
@@ -384,6 +418,7 @@
       showPraise(FX.praise(), false);
       if (total > 1) FX.word(); else FX.ding();
       FX.confetti({ x: 0.5, y: 0.42, n: total > 1 ? 95 : 60 });
+      earn(done[keyOf(W.L, W.it)] ? 1 : (total > 1 ? 4 : 3));
       done[keyOf(W.L, W.it)] = true;
       store.set('done', done);
       hint('');
@@ -587,6 +622,7 @@
     var b = badge(L), isNew = !b.quiz;
     if (!b.quiz || stars > b.quiz) b.quiz = stars;
     store.set('badges', badges);
+    earn(3 + stars * 2 + (isNew ? 5 : 0));
     var msg = stars === 3 ? 'Amazing! You got ' + first + ' of 8 on the first try!' :
               stars === 2 ? 'Great work! ' + first + ' of 8 on the first try.' :
               'You finished the quiz! Every try makes you stronger.';
@@ -638,8 +674,11 @@
   }
 
   /* ---------- router ---------- */
+  var leaveFns = [];
+  var routes = {};
   function route() {
     stopWriter();
+    leaveFns.splice(0).forEach(function (f) { try { f(); } catch (e) { /* ignore */ } });
     var p = location.hash.replace(/^#\/?/, '').split('/');
     var L = lessonById(p[1]);
     var i = parseInt(p[2], 10);
@@ -648,6 +687,7 @@
     if (p[0] === 'r' && L && L.items[i]) return renderRead(L, i);
     if (p[0] === 'q' && L) return renderQuiz(L);
     if (p[0] === 'about') return renderAbout();
+    if (routes[p[0]]) return routes[p[0]](p.slice(1));
     renderHome();
   }
   window.addEventListener('hashchange', route);
@@ -672,6 +712,20 @@
     });
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () { /* ignore */ }); });
   }
+
+  /* ---------- API for the extra modules (games, garden, word lab) ---------- */
+  var A = window.HANZI = {
+    app: app, FX: FX, AUDIO: AUDIO, store: store, lessons: lessons, routes: routes, tabs: tabs,
+    $: $, go: go, later: later, shuffle: shuffle, esc: esc, row: row, glyph: glyph,
+    pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc,
+    say: say, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
+    bindTop: bindTop, earn: earn, spend: spend, walletPill: walletPill, tabbar: tabbar,
+    wallet: function () { return wallet; },
+    script: function () { return script; },
+    isDone: function (L, it) { return !!done[keyOf(L, it)]; },
+    onLeave: function (fn) { leaveFns.push(fn); }
+  };
+  (window.HANZI_MODS || []).forEach(function (m) { try { m(A); } catch (e) { if (window.console) console.error('module failed', e); } });
 
   route();
 })();

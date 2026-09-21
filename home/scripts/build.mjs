@@ -63,7 +63,7 @@ console.log(`strokes.js: ${Object.keys(out).length} characters (${[...need.value
 
 // stamp a version so devices refresh their offline copy
 const audioFiles = fs.existsSync(path.join(root, 'audio')) ? fs.readdirSync(path.join(root, 'audio')).filter((f) => f.endsWith('.m4a')).sort().map((f) => 'audio/' + f) : [];
-const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
+const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'garden.js', 'games.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
 const files = [...core, ...audioFiles];
 const h = crypto.createHash('sha1');
 for (const f of files) h.update(fs.readFileSync(path.join(root, f)));
