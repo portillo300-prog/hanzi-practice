@@ -71,14 +71,16 @@
     });
     $('start').onclick = function () { FX.pop(); A.go('#/g/' + cfg.id + '/play'); };
   };
-  // a prompt for a target character: pinyin, meaning, or (when there is a voice) a sound
+  // a prompt for a target character: pinyin, meaning, or (only when there is a voice that works on this device) a sound
   A.promptKind = function (target) {
     var t = ['pinyin', 'meaning'];
-    if (A.hasVoice(target)) t.push('listen');
+    if (A.hasVoice(target) && !FX.voiceBroken) t.push('listen');
     return t[Math.floor(Math.random() * t.length)];
   };
+  var lastVerb = 'Find the character';
   A.promptHTML = function (target, kind, verb) {
     verb = verb || 'Find the character';
+    lastVerb = verb;
     if (kind === 'pinyin') return '<div class="gq">' + verb + ' for</div>' + A.pinyinHTML(target.py, target.alt);
     if (kind === 'meaning') return '<div class="gq">' + verb + ' that means</div><div class="gmean">' + A.esc(A.plain(target.en)) + '</div>';
     return '<div class="gq">Listen, then choose</div><button class="speak big" id="gspeak" aria-label="Play the sound">🔊</button>';
@@ -86,8 +88,14 @@
   A.bindPromptSound = function (target, kind, stillCurrent) {
     var b = $('gspeak');
     if (!b) return;
-    b.onclick = function () { A.say(target, true); };
-    setTimeout(function () { if (stillCurrent()) A.say(target, true); }, 350);
+    var box = b.parentNode, verb = lastVerb;
+    // the sound could not play on this device: turn this question into a pinyin or meaning question
+    function noSound() {
+      if (!box || !stillCurrent()) return;
+      box.innerHTML = A.promptHTML(target, Math.random() < 0.5 ? 'pinyin' : 'meaning', verb) + '<div class="gtry">No sound this time. Try this clue!</div>';
+    }
+    b.onclick = function () { A.say(target, true).then(function (ok) { if (ok === false) noSound(); }); };
+    setTimeout(function () { if (stillCurrent()) A.say(target, true, true); }, 350);
   };
   A.starsFor = function (good, total) { var r = good / total; return r >= 0.85 ? 3 : r >= 0.6 ? 2 : 1; };
 

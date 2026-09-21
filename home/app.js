@@ -190,11 +190,12 @@
     return urls;
   }
   function hasVoice(it) { return !!(clipFor(it) || charClips(it)); }
-  function say(it, force) {
+  // force = play even if the sound is muted; auto = played by the app (not a tap), so a refusal is not counted as "no sound"
+  function say(it, force, auto) {
     var f = clipFor(it);
-    if (f) return FX.clip(f, force);
+    if (f) return FX.clip(f, force, auto);
     var seq = charClips(it);
-    if (seq) return FX.sequence(seq, force);
+    if (seq) return FX.sequence(seq, force, auto);
     return Promise.resolve(false);
   }
   function speakBtn(it) {
@@ -530,6 +531,8 @@
   }
   function drawQuestion() {
     var q = Q.qs[Q.i], L = Q.L, it = q.it;
+    // no working voice on this device: ask a "which character is this?" question instead of a silent listen one
+    if (q.t === 'listen' && FX.voiceBroken) { q.t = 'pick'; q.noSound = true; }
     Q.miss = 0; Q.assist = false; Q.locked = false;
     var label, info, body = '', ctrl = '';
     if (q.t === 'py') {
@@ -552,7 +555,8 @@
         info = '<button class="speak big" id="qspeak" aria-label="Play the sound">🔊</button>';
       } else {
         label = 'Which character is this?';
-        info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + plainEn(it.en) + '</div>';
+        info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + plainEn(it.en) + '</div>' +
+          (q.noSound ? '<div class="gtry">No sound this time. Try this clue!</div>' : '');
       }
       body = '<div class="choices">' + options.map(function (o) {
         return '<button class="choice glc" data-ok="' + (o.s === it.s ? 1 : 0) + '">' + row(textOf(o)) + '</button>';
@@ -582,8 +586,12 @@
     } else {
       Array.prototype.forEach.call(app.querySelectorAll('.choice'), function (b) { b.onclick = function () { answerChoice(b); }; });
       if (q.t === 'listen') {
-        $('qspeak').onclick = function () { say(it, true).then(soundFailed); };
-        later(function () { if (Q && Q.qs[Q.i] === q) say(it, true); }, 400);
+        $('qspeak').onclick = function () {
+          say(it, true).then(function (ok) {
+            if (ok === false && Q && Q.qs[Q.i] === q && !Q.locked) drawQuestion();   // swaps this question to a pick question
+          });
+        };
+        later(function () { if (Q && Q.qs[Q.i] === q) say(it, true, true); }, 400);
       }
     }
   }

@@ -24,6 +24,8 @@
     return ctx;
   }
   FX.unlock = ac;
+  // iOS 16.4+: treat this page as "playback" audio so the ring/silent switch does not mute chimes or voices
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* ignore */ }
   // iPad/iPhone only allow sound after a tap: wake the audio engine on the first touches
   ['pointerdown', 'touchend', 'click'].forEach(function (ev) {
     document.addEventListener(ev, function () { ac(); unlockPlayer(); }, { passive: true });
@@ -100,7 +102,12 @@
       unlockPlayer();
       player.src = bu;
       var p = player.play();
-      return (p && p.then ? p : Promise.resolve()).then(function () { FX.info = 'played through the audio player'; return true; });
+      // a play() that never answers counts as a failure (so the Web Audio backup gets its turn)
+      var late = new Promise(function (res, rej) { setTimeout(function () { rej(new Error('the audio player did not start')); }, 3000); });
+      return Promise.race([p && p.then ? p : Promise.resolve(), late]).then(
+        function () { FX.info = 'played through the audio player'; return true; },
+        function (e) { try { player.pause(); } catch (x) { /* ignore */ } throw e; }
+      );
     });
   }
   function viaWebAudio(url) {
@@ -115,22 +122,37 @@
     if (buffers[url]) return Promise.resolve(go(buffers[url]));
     return fetch(url)
       .then(function (r) { return r.arrayBuffer(); })
-      .then(function (ab) { return new Promise(function (res, rej) { c.decodeAudioData(ab, res, rej); }); })
+      .then(function (ab) {
+        return new Promise(function (res, rej) {
+          setTimeout(function () { rej(new Error('decoding took too long')); }, 4000);   // never leave a tap hanging
+          c.decodeAudioData(ab, res, rej);
+        });
+      })
       .then(function (b) { buffers[url] = b; return go(b); });
   }
-  FX.clip = function (url, force) {
+  /* FX.voiceBroken: true once a voice the CHILD ASKED FOR (a tap) could not be played on this device.
+     Games and quizzes then stop asking "listen" questions instead of leaving a silent button.
+     Automatic plays (no tap) never count, because a browser may refuse those for other reasons. */
+  FX.voiceBroken = false;
+  function track(ok, force, auto) {
+    if (ok) FX.voiceBroken = false;
+    else if (force && !auto) FX.voiceBroken = true;
+    return ok;
+  }
+  FX.clip = function (url, force, auto) {
     if (!soundOn && !force) return Promise.resolve(false);
     ac(); unlockPlayer();
     return viaPlayer(url).catch(function (e1) {
+      if (e1 && e1.name === 'AbortError') return true;   // a newer clip took over: nothing is wrong
       return viaWebAudio(url).catch(function (e2) {
-        FX.info = 'could not play (' + ((e1 && e1.name) || e1) + ' / ' + ((e2 && e2.name) || e2) + ')';
+        FX.info = 'could not play (' + ((e1 && e1.name) || (e1 && e1.message) || e1) + ' / ' + ((e2 && e2.name) || (e2 && e2.message) || e2) + ')';
         return false;
       });
-    });
+    }).then(function (ok) { return track(ok, force, auto); });
   };
 
   /* read several clips one after another (used to say a word syllable by syllable) */
-  FX.sequence = function (urls, force) {
+  FX.sequence = function (urls, force, auto) {
     if (!soundOn && !force) return Promise.resolve(false);
     ac(); unlockPlayer();
     var i = 0;
@@ -146,7 +168,7 @@
         });
       }).then(next);
     }
-    return next().catch(function () { return false; });
+    return next().catch(function () { return false; }).then(function (ok) { return track(ok, force, auto); });
   };
 
   /* Sound check: tries each step and reports what works on THIS device */
