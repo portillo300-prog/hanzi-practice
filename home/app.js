@@ -46,6 +46,8 @@
     lessons.push(labLesson);
   }
   function homeOf(L) { return L.hidden ? '#/words' : '#/l/' + L.id; }
+  // meanings shown in games/quizzes are kept short and plain: no parenthetical notes
+  function plainEn(t) { return String(t).replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim(); }
   function keyOf(L, it) { return L.id + ':' + it.s; }
   function textOf(it) { return script === 't' ? (it.t || it.s) : it.s; }
   function titleOf(L) { return script === 't' ? L.title.t : L.title.s; }
@@ -532,7 +534,7 @@
     var label, info, body = '', ctrl = '';
     if (q.t === 'py') {
       label = 'Which pinyin matches?';
-      info = '<div class="qbig">' + row(textOf(it)) + '</div><div class="meaning">' + it.en + '</div>';
+      info = '<div class="qbig">' + row(textOf(it)) + '</div><div class="meaning">' + plainEn(it.en) + '</div>';
       var base = it.py.replace(/[1-5]$/, '');
       var wrong = shuffle([1, 2, 3, 4].map(function (t) { return base + t; }).filter(function (x) { return x !== it.py; })).slice(0, 2);
       var others = shuffle(L.characters.filter(function (c) { return c.py !== it.py && c.py.replace(/[1-5]$/, '') !== base; })).slice(0, 1);
@@ -550,14 +552,14 @@
         info = '<button class="speak big" id="qspeak" aria-label="Play the sound">🔊</button>';
       } else {
         label = 'Which character is this?';
-        info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + it.en + '</div>';
+        info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + plainEn(it.en) + '</div>';
       }
       body = '<div class="choices">' + options.map(function (o) {
         return '<button class="choice glc" data-ok="' + (o.s === it.s ? 1 : 0) + '">' + row(textOf(o)) + '</button>';
       }).join('') + '</div>';
     } else {
       label = 'Write it from memory!';
-      info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + it.en + '</div><div class="hint" id="hint"></div>';
+      info = '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div><div class="meaning">' + plainEn(it.en) + '</div><div class="hint" id="hint"></div>';
       body = '<div class="board" id="board"></div>';
       ctrl = '<div class="controls two"><button class="btn" id="peek"><span class="ico">💡</span>Peek</button><button class="btn" id="qagain"><span class="ico">↺</span>Try again</button></div>';
     }
@@ -738,7 +740,7 @@
   var A = window.HANZI = {
     app: app, FX: FX, AUDIO: AUDIO, store: store, lessons: lessons.filter(function (L) { return !L.hidden; }), allLessons: lessons, labLesson: labLesson, routes: routes, tabs: tabs,
     $: $, go: go, later: later, shuffle: shuffle, esc: esc, row: row, glyph: glyph,
-    pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc,
+    pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc, plain: plainEn,
     say: say, hasVoice: hasVoice, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
     bindTop: bindTop, earn: earn, spend: spend, walletPill: walletPill, tabbar: tabbar,
     wallet: function () { return wallet; },

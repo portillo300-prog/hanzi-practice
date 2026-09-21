@@ -55,7 +55,7 @@
       var c = seq[idx]; miss = 0; locked = false;
       $('gprog').textContent = (idx + 1) + ' / ' + seq.length;
       var base = c.py.replace(/[1-5]$/, '').replace(/v/g, 'ü');
-      $('tcard').innerHTML = '<div class="tc-glyph">' + A.row(A.textOf(c)) + '</div><div class="tc-py" id="tcpy">' + base + '</div><div class="tc-en">' + A.esc(c.en) + '</div>' +
+      $('tcard').innerHTML = '<div class="tc-glyph">' + A.row(A.textOf(c)) + '</div><div class="tc-py" id="tcpy">' + base + '</div><div class="tc-en">' + A.esc(A.plain(c.en)) + '</div>' +
         (A.hasVoice(c) ? '<button class="speak" id="gspeak" aria-label="Play the sound">🔊</button>' : '');
       if ($('gspeak')) { $('gspeak').onclick = function () { A.say(c, true); }; setTimeout(function () { if (alive && seq[idx] === c) A.say(c, false); }, 400); }
       Array.prototype.forEach.call(app.querySelectorAll('.house'), function (h) { h.classList.remove('yes', 'wob', 'shine'); });

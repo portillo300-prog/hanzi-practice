@@ -29,9 +29,11 @@
     return sel.filter(function (id) { return ids.indexOf(id) >= 0; });
   };
   A.poolFor = function (sel) {
-    var out = [];
-    A.lessons.forEach(function (L) { if (sel.indexOf(L.id) >= 0) L.characters.forEach(function (c) { out.push(c); }); });
-    return out;
+    var only = store.get('onlyDone', false), all = [], done = [];
+    A.lessons.forEach(function (L) {
+      if (sel.indexOf(L.id) >= 0) L.characters.forEach(function (c) { all.push(c); if (A.isDone(L, c)) done.push(c); });
+    });
+    return (only && done.length >= 6) ? done : all;   // "only practiced" needs at least 6 characters to make a good game
   };
   // setup screen: pick the lessons, then Start
   A.gameSetup = function (cfg) {
@@ -45,13 +47,26 @@
       '<div class="chips">' + A.lessons.map(function (L) {
         return '<button class="chip' + (sel.indexOf(L.id) >= 0 ? ' on' : '') + '" data-l="' + L.id + '">Lesson ' + L.number + ' ' + L.sticker + '</button>';
       }).join('') + '</div>') +
+      (cfg.noChips ? '' : '<div class="chips"><button class="chip' + (store.get('onlyDone', false) ? ' on' : '') + '" id="onlyDone">✓ Only characters I\'ve practiced</button></div>' +
+       '<p class="shophint" id="onlyHint"></p>') +
       '<div class="startrow"><button class="btn primary big" id="start">▶ Start</button></div></div>';
-    Array.prototype.forEach.call(app.querySelectorAll('.chip'), function (c) {
+    if ($('onlyDone')) {
+      var upd = function () {
+        var on = store.get('onlyDone', false), n = A.poolFor(A.selectedLessons()).length;
+        var h = $('onlyHint'); if (h) h.textContent = on ? (A.poolFor(A.selectedLessons()).length && store.get('onlyDone', false) ? 'Playing with the characters you have traced.' : '') : '';
+        var doneCount = 0; A.lessons.forEach(function (L) { if (A.selectedLessons().indexOf(L.id) >= 0) L.characters.forEach(function (c) { if (A.isDone(L, c)) doneCount++; }); });
+        if (on && doneCount < 6 && h) h.textContent = 'Trace a few more characters first (you have ' + doneCount + '). Until then, all the characters are used.';
+      };
+      $('onlyDone').onclick = function () { var v = !store.get('onlyDone', false); store.set('onlyDone', v); $('onlyDone').classList.toggle('on', v); upd(); };
+      upd();
+    }
+    Array.prototype.forEach.call(app.querySelectorAll('.chip[data-l]'), function (c) {
       c.onclick = function () {
         c.classList.toggle('on');
         var now = Array.prototype.map.call(app.querySelectorAll('.chip.on'), function (x) { return x.getAttribute('data-l'); });
         if (!now.length) { c.classList.add('on'); return; }
         store.set('bubbleSel', now);
+        if ($('onlyDone')) $('onlyDone').click(), $('onlyDone').click();   // refresh the hint text
       };
     });
     $('start').onclick = function () { FX.pop(); A.go('#/g/' + cfg.id + '/play'); };
@@ -65,7 +80,7 @@
   A.promptHTML = function (target, kind, verb) {
     verb = verb || 'Find the character';
     if (kind === 'pinyin') return '<div class="gq">' + verb + ' for</div>' + A.pinyinHTML(target.py, target.alt);
-    if (kind === 'meaning') return '<div class="gq">' + verb + ' that means</div><div class="gmean">' + A.esc(target.en) + '</div>';
+    if (kind === 'meaning') return '<div class="gq">' + verb + ' that means</div><div class="gmean">' + A.esc(A.plain(target.en)) + '</div>';
     return '<div class="gq">Listen, then choose</div><button class="speak big" id="gspeak" aria-label="Play the sound">🔊</button>';
   };
   A.bindPromptSound = function (target, kind, stillCurrent) {
@@ -133,10 +148,15 @@
         var laneH = (H - size) / Math.max(1, N - 1);
         b.y = Math.max(0, Math.min(H - size, b.lane * laneH + (Math.random() - 0.5) * laneH * 0.3));
         b.x = initial ? W * (Math.random() * 0.9) - size * 0.3 : -size * (1.1 + Math.random() * 1.4);
-        b.vx = (40 + Math.random() * 34) * speed; b.vy = 0; b.sway = reduced ? 0 : 6 + Math.random() * 10;
+        b.vx = (26 + Math.random() * 22) * speed; b.vy = 0; b.sway = reduced ? 0 : 6 + Math.random() * 10;
       }
       b.f = 0.6 + Math.random() * 0.7;
       b.item = randomItem(shownChars().concat(target ? [target.s] : []));
+      // never lose the answer: if no other body is carrying it, this one respawns carrying it
+      if (target && !locked) {
+        var carried = bubbles.some(function (o) { return o !== b && o.item === target && !o.el.classList.contains('popping'); });
+        if (!carried) b.item = target;
+      }
       b.el.classList.remove('popping', 'wob', 'nope');
       paint(b);
     }
