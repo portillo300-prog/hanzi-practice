@@ -129,6 +129,26 @@
     });
   };
 
+  /* read several clips one after another (used to say a word syllable by syllable) */
+  FX.sequence = function (urls, force) {
+    if (!soundOn && !force) return Promise.resolve(false);
+    ac(); unlockPlayer();
+    var i = 0;
+    function next() {
+      if (i >= urls.length) return Promise.resolve(true);
+      var u = urls[i++];
+      return viaPlayer(u).then(function () {
+        return new Promise(function (res) {
+          var fin = false;
+          function done() { if (fin) return; fin = true; player.removeEventListener('ended', done); setTimeout(res, 120); }
+          player.addEventListener('ended', done);
+          setTimeout(done, 2500);
+        });
+      }).then(next);
+    }
+    return next().catch(function () { return false; });
+  };
+
   /* Sound check: tries each step and reports what works on THIS device */
   FX.diagnose = function (url) {
     var lines = [];

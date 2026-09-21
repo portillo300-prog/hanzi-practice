@@ -79,7 +79,7 @@ async function findLinguaLibre(word) {
       const d = await api({ action: 'query', list: 'allpages', apnamespace: '6', apprefix: prefix, aplimit: '5' });
       const hit = d.query.allpages.find((p) => p.title === `File:${prefix}.wav`);
       if (hit) { const info = await fileInfo(hit.title); if (info) return { ...info, speaker: sp, source: 'Lingua Libre' }; }
-      await sleep(150);
+      await sleep(400);
     }
   }
   // any other speaker: search, keep only exact single-word recordings
@@ -118,14 +118,25 @@ for (const L of C.lessons) {
   for (const w of L.words) if (!items.has(w.s)) items.set(w.s, { key: w.s, kind: 'w', py: w.py });
 }
 for (const w of (C.lab && C.lab.words) || []) if (!items.has(w.s)) items.set(w.s, { key: w.s, kind: 'w', py: w.py });
+// Helper characters: single-character clips let the app read any unrecorded word syllable by syllable.
+// A character is added only when a word gives it a clear citation tone (1-4), never a neutral tone.
+for (const w of [...C.lessons.flatMap((L) => L.words), ...((C.lab && C.lab.words) || [])]) {
+  const S = Array.from(w.s), P = w.py.trim().split(/\s+/);
+  if (S.length !== P.length) continue;
+  S.forEach((c, i) => { if (!items.has(c) && /[1-4]$/.test(P[i])) items.set(c, { key: c, kind: 'c', py: P[i], helper: true }); });
+}
 
 const hex = (s) => 'u' + Array.from(s).map((ch) => ch.codePointAt(0).toString(16)).join('_');
 const manifestFile = path.join(cacheDir, 'manifest.json');
+const missingFile = path.join(cacheDir, 'missing.json');
+const RETRY = process.argv.includes('--retry');
+const missingCache = fs.existsSync(missingFile) ? JSON.parse(fs.readFileSync(missingFile, 'utf8')) : {};
 const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : {};
 
 const report = { found: [], missing: [] };
 for (const it of items.values()) {
   if (manifest[it.key] && fs.existsSync(path.join(root, manifest[it.key].f))) { report.found.push(`${it.key} (already done)`); continue; }
+  if (!RETRY && missingCache[it.key] && Date.now() - missingCache[it.key] < 7 * 864e5) { report.missing.push(it.key); console.log('skipped (not found recently; use --retry)', it.key); continue; }
   let hit = null;
   if (it.kind === 'c') {
     hit = await findToneMarked(it.py);
@@ -135,7 +146,7 @@ for (const it of items.values()) {
     hit = await findLinguaLibre(it.key);
     if (!hit) hit = await findToneMarkedWord(it.py);
   }
-  if (!hit) { report.missing.push(it.key); console.log('MISSING ', it.key); continue; }
+  if (!hit) { report.missing.push(it.key); missingCache[it.key] = Date.now(); fs.writeFileSync(missingFile, JSON.stringify(missingCache)); console.log('MISSING ', it.key); continue; }
   report.found.push(`${it.key} <- ${hit.source}: ${hit.title}`);
   console.log('found   ', it.key, '<-', hit.title);
   it._hit = hit;
@@ -154,13 +165,14 @@ async function download(url, dest) {
   throw new Error('gave up (rate limited): ' + url);
 }
 function ff(args) { return spawnSync(FFMPEG, ['-hide_banner', ...args], { encoding: 'utf8' }); }
-function convert(src, dest) {
+function convert(src, dest, range) {
+  const pre = range ? ['-ss', String(range[0]), '-to', String(range[1])] : [];
   // trim silence at both ends, peak-normalize to about -1 dB, mono AAC in m4a
   const trim = 'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.04,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.04,areverse';
-  const probe = ff(['-i', src, '-af', trim + ',volumedetect', '-f', 'null', '-']);
+  const probe = ff([...pre, '-i', src, '-af', trim + ',volumedetect', '-f', 'null', '-']);
   const m = /max_volume: (-?[\d.]+) dB/.exec(probe.stderr || '');
   const gain = m ? Math.min(20, -1 - parseFloat(m[1])) : 0;
-  const r = ff(['-y', '-loglevel', 'error', '-i', src, '-af', `${trim},volume=${gain.toFixed(1)}dB,apad=pad_dur=0.05`, '-ac', '1', '-ar', '44100', '-c:a', 'aac', '-b:a', '64k', dest]);
+  const r = ff(['-y', '-loglevel', 'error', ...pre, '-i', src, '-af', `${trim},volume=${gain.toFixed(1)}dB,apad=pad_dur=0.05`, '-ac', '1', '-ar', '44100', '-c:a', 'aac', '-b:a', '64k', dest]);
   if (r.status !== 0) throw new Error('ffmpeg failed: ' + r.stderr);
 }
 function duration(file) {
@@ -183,6 +195,21 @@ for (const it of items.values()) {
   manifest[it.key] = { f: rel, who: h.speaker, lic: h.license, src: h.page, from: h.source, secs: Math.round(dur * 100) / 100 };
   fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 1));
   console.log(`  ok ${it.key}  ${dur.toFixed(2)}s`);
+}
+
+/* Manual cuts: a syllable taken from a longer real recording where no clip of its own exists.
+   Each cut was checked by the silence gap between syllables and the pitch contour (tone 1 = high and flat). */
+const CUTS = { '欢': { from: '喜欢', start: 0.52, end: 0.93 } };
+for (const [key, cut] of Object.entries(CUTS)) {
+  const src = manifest[cut.from];
+  if (manifest[key] || !src) continue;
+  const raw = path.join(cacheDir, hex(cut.from) + '.wav');
+  if (!fs.existsSync(raw)) continue;
+  const rel = `audio/${hex(key)}.m4a`;
+  convert(raw, path.join(root, rel), [cut.start, cut.end]);
+  manifest[key] = { f: rel, who: src.who, lic: src.lic, src: src.src, from: src.from, note: `cut from ${cut.from}`, secs: Math.round(duration(path.join(root, rel)) * 100) / 100 };
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 1));
+  console.log(`  cut ${key} from ${cut.from}: ${manifest[key].secs}s`);
 }
 
 /* write the manifest the app loads */

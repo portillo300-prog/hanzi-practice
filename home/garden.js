@@ -5,18 +5,18 @@
 
   // emoji are drawn by the device (free, offline, always pretty). Only widely supported ones are used.
   var SHOP = [
-    { cat: 'Flowers', items: [['🌸', 5, 'Cherry blossom'], ['🌷', 5, 'Tulip'], ['🌼', 5, 'Daisy'], ['🌾', 4, 'Grass'], ['🌹', 8, 'Rose'], ['🌻', 8, 'Sunflower'], ['🌺', 8, 'Hibiscus'], ['💐', 15, 'Bouquet']] },
-    { cat: 'Plants', items: [['🌿', 4, 'Herb'], ['🍀', 6, 'Clover'], ['🌵', 6, 'Cactus'], ['🍄', 8, 'Mushroom'], ['🌲', 10, 'Pine tree'], ['🌴', 12, 'Palm tree'], ['🌳', 12, 'Tree']] },
-    { cat: 'Animals', items: [['🐌', 8, 'Snail'], ['🐞', 10, 'Ladybug'], ['🐝', 12, 'Bee'], ['🦋', 15, 'Butterfly'], ['🐥', 15, 'Chick'], ['🐠', 15, 'Fish'], ['🐢', 18, 'Turtle'], ['🐰', 20, 'Bunny'], ['🐱', 20, 'Kitten'], ['🐶', 20, 'Puppy'], ['🐼', 25, 'Panda'], ['🦄', 40, 'Unicorn']] },
-    { cat: 'Treats', items: [['🍓', 8, 'Strawberry'], ['🍉', 8, 'Watermelon'], ['🍭', 8, 'Lollipop'], ['🧁', 10, 'Cupcake'], ['🍦', 10, 'Ice cream'], ['🎂', 20, 'Cake']] },
-    { cat: 'Sky & fun', items: [['☁️', 6, 'Cloud'], ['☀️', 10, 'Sun'], ['🎈', 10, 'Balloon'], ['🎀', 10, 'Ribbon'], ['🌙', 12, 'Moon'], ['🏮', 15, 'Lantern'], ['🌈', 20, 'Rainbow'], ['🏡', 30, 'Little house'], ['🎠', 40, 'Carousel']] }
+    { cat: 'Flowers', items: [['🌾', 4, 'Grass'], ['🌱', 4, 'Seedling'], ['🌷', 5, 'Tulip'], ['🌼', 5, 'Daisy'], ['🌸', 6, 'Cherry blossom'], ['🌹', 8, 'Rose'], ['🌻', 8, 'Sunflower'], ['🌺', 8, 'Hibiscus'], ['💮', 10, 'White flower'], ['🏵️', 12, 'Rosette'], ['💐', 15, 'Bouquet']] },
+    { cat: 'Plants', items: [['🍃', 8, 'Leaves'], ['🌿', 8, 'Herb'], ['🍀', 10, 'Clover'], ['🌵', 10, 'Cactus'], ['🍁', 10, 'Maple leaf'], ['🍄', 12, 'Mushroom'], ['🌲', 14, 'Pine tree'], ['🎍', 14, 'Bamboo'], ['🌴', 16, 'Palm tree'], ['🌳', 16, 'Tree'], ['🎋', 18, 'Wish tree']] },
+    { cat: 'Animals', items: [['🐌', 12, 'Snail'], ['🐞', 14, 'Ladybug'], ['🐝', 16, 'Bee'], ['🐸', 18, 'Frog'], ['🦋', 20, 'Butterfly'], ['🐥', 20, 'Chick'], ['🐠', 20, 'Fish'], ['🦆', 22, 'Duck'], ['🐢', 24, 'Turtle'], ['🐷', 25, 'Piglet'], ['🐰', 28, 'Bunny'], ['🐱', 28, 'Kitten'], ['🐶', 28, 'Puppy'], ['🦀', 26, 'Crab'], ['🐧', 30, 'Penguin'], ['🦔', 30, 'Hedgehog'], ['🐨', 32, 'Koala'], ['🦉', 30, 'Owl'], ['🐙', 34, 'Octopus'], ['🐻', 35, 'Bear'], ['🦊', 35, 'Fox'], ['🐼', 40, 'Panda'], ['🐬', 40, 'Dolphin'], ['🐴', 40, 'Pony'], ['🦁', 45, 'Lion'], ['🦄', 50, 'Unicorn']] },
+    { cat: 'Treats', items: [['🍎', 12, 'Apple'], ['🍓', 12, 'Strawberry'], ['🍉', 12, 'Watermelon'], ['🍭', 12, 'Lollipop'], ['🍒', 14, 'Cherries'], ['🍪', 14, 'Cookie'], ['🧁', 16, 'Cupcake'], ['🍦', 16, 'Ice cream'], ['🍩', 16, 'Donut'], ['🍫', 16, 'Chocolate'], ['🍰', 24, 'Shortcake'], ['🎂', 30, 'Birthday cake']] },
+    { cat: 'Sky & fun', items: [['☁️', 10, 'Cloud'], ['✨', 14, 'Sparkles'], ['☀️', 16, 'Sun'], ['🎈', 16, 'Balloon'], ['🎀', 16, 'Ribbon'], ['🌙', 20, 'Moon'], ['🏮', 22, 'Lantern'], ['🌟', 24, 'Glowing star'], ['🎁', 26, 'Present'], ['🎨', 26, 'Paint palette'], ['🌈', 30, 'Rainbow'], ['🚗', 30, 'Little car'], ['🚂', 34, 'Train'], ['⛲', 38, 'Fountain'], ['🏡', 45, 'Little house'], ['🚀', 45, 'Rocket'], ['🎪', 50, 'Circus tent'], ['🎠', 55, 'Carousel'], ['🎡', 60, 'Ferris wheel']] }
   ];
   var SCENES = [
     { id: 'meadow', name: 'Sunny meadow', price: 0 },
-    { id: 'blossom', name: 'Blossom sky', price: 30 },
-    { id: 'sunset', name: 'Sunset', price: 25 },
-    { id: 'night', name: 'Starry night', price: 25 },
-    { id: 'ocean', name: 'Ocean', price: 30 }
+    { id: 'blossom', name: 'Blossom sky', price: 40 },
+    { id: 'sunset', name: 'Sunset', price: 35 },
+    { id: 'night', name: 'Starry night', price: 35 },
+    { id: 'ocean', name: 'Ocean', price: 40 }
   ];
 
   var G = store.get('garden', null) || { bg: 'meadow', bgs: ['meadow'], inv: [], next: 1 };

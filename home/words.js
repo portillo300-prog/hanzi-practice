@@ -30,6 +30,16 @@
   function shown(c) { return A.script() === 't' ? TILE[c] : c; }
   function tileHTML(c, extra) { return '<button class="wtile' + (extra || '') + '" data-c="' + c + '" aria-label="' + c + '">' + A.glyph(shown(c)) + '</button>'; }
 
+  // tapping a tile says its sound when we have a recording (otherwise a soft tick)
+  function tileSound(c) { if (A.hasVoice({ s: c })) A.say({ s: c }, false); else FX.tink(); }
+
+  // the next word she has not found yet (after this one, wrapping around); -1 when everything is found
+  function nextUnfound(w) {
+    var i = ALL.indexOf(w), n = ALL.length;
+    for (var k = 1; k <= n; k++) { var j = (i + k) % n; if (!found[ALL[j].s] && ALL[j] !== w) return j; }
+    return -1;
+  }
+
   function foundCount() { return ALL.filter(function (w) { return found[w.s]; }).length; }
   function reward(w) { return 2 + (w.group === 'stretch' ? 1 : 0); }
   function practiceHref(w) {
@@ -48,8 +58,9 @@
   };
 
   /* ---- the card shown when a word is found (or tapped in the collection) ---- */
-  function showCard(w, isNew, after) {
-    var canHear = !!AUDIO[w.s];
+  function showCard(w, isNew, after, opts) {
+    opts = opts || {};
+    var canHear = A.hasVoice(w);
     var m = A.modal(
       (isNew ? '<div class="wc-new">New word found!</div>' : '') +
       '<div class="wc-word">' + A.row(A.textOf(w)) + '</div>' + A.pinyinHTML(w.py, null, 'md') +
@@ -57,7 +68,8 @@
       (w.how ? '<div class="mm">' + A.esc(w.how) + '</div>' : '') +
       (isNew ? '<div class="mp">+ ⭐ ' + reward(w) + '</div>' : '') +
       '<div class="mb">' + (canHear ? '<button class="btn" id="wc-hear">🔊 Hear it</button>' : '') +
-      '<button class="btn" id="wc-write">✏️ Write it</button><button class="btn primary" id="wc-ok">' + (isNew ? 'Keep playing' : 'OK') + '</button></div>');
+      '<button class="btn" id="wc-write">✏️ Write it</button>' + (opts.secondaryLabel ? '<button class="btn" id="wc-2">' + opts.secondaryLabel + '</button>' : '') + '<button class="btn primary" id="wc-ok">' + (opts.primaryLabel || (isNew ? 'Keep playing' : 'OK')) + '</button></div>');
+    if (opts.secondaryLabel) $('wc-2').onclick = function () { m.close(); if (opts.secondary) opts.secondary(); };
     if (canHear) $('wc-hear').onclick = function () { A.say(w, true); };
     $('wc-write').onclick = function () { m.close(); A.go(practiceHref(w)); };
     $('wc-ok').onclick = function () { m.close(); if (after) after(); };
@@ -126,7 +138,7 @@
     Array.prototype.forEach.call($('tiles').querySelectorAll('.wtile'), function (b) {
       b.onclick = function () {
         if (busy || seq.length >= 3) return;
-        seq.push(b.getAttribute('data-c')); FX.tink(); drawSlots();
+        var cc = b.getAttribute('data-c'); seq.push(cc); tileSound(cc); drawSlots();
         var key = seq.join(''), w = BY[key];
         if (w) {
           busy = true;
@@ -171,7 +183,7 @@
         '<div class="screen has-tabs wl">' +
         '<div class="topbar"><button class="btn" data-go="' + backHref + '">‹ Words</button><span class="title">' + (mode === 'round' ? (idx + 1) + ' / ' + list.length : 'Word Puzzle') + '</span>' + A.walletPill() + '</div>' +
         '<div class="pz-clue"><div class="gq">Build the word for</div><div class="gmean">' + A.esc(w.en) + '</div>' +
-        '<div class="pz-tools">' + (AUDIO[w.s] ? '<button class="btn" id="pz-hear">🔊 Listen</button>' : '') + '<button class="btn" id="pz-hint">💡 Hint</button></div><div class="pz-py" id="pzpy"></div></div>' +
+        '<div class="pz-tools">' + (A.hasVoice(w) ? '<button class="btn" id="pz-hear">🔊 Listen</button>' : '') + '<button class="btn" id="pz-hint">💡 Hint</button></div><div class="pz-py" id="pzpy"></div></div>' +
         '<div class="pzbox" id="bw"><div class="slots" id="slots"></div><div class="wl-msg" id="wlmsg">&nbsp;</div></div>' +
         '<div class="tilegrid small" id="tiles">' + pool.map(function (c) { return tileHTML(c); }).join('') + '</div>' + A.tabbar('words') + '</div>';
       drawSlots(n);
@@ -180,7 +192,7 @@
       Array.prototype.forEach.call($('tiles').querySelectorAll('.wtile'), function (b) {
         b.onclick = function () {
           if (locked || seq.length >= n) return;
-          seq.push(b.getAttribute('data-c')); FX.tink(); drawSlots(n);
+          var cc = b.getAttribute('data-c'); seq.push(cc); tileSound(cc); drawSlots(n);
           if (seq.length === n) check();
         };
       });
@@ -199,7 +211,12 @@
         msg('🎉 ' + A.esc(w.s) + ' = ' + A.esc(w.en), 'good');
         A.later(function () {
           if (!alive) return;
-          if (mode === 'find') return showCard(w, isNew, function () { A.go('#/words'); });
+          if (mode === 'find') {
+            var nx = nextUnfound(w);
+            return showCard(w, isNew, function () { A.go(nx >= 0 ? '#/words/find/' + nx : '#/words'); },
+              nx >= 0 ? { primaryLabel: 'Next word ›', secondaryLabel: '🧩 All words', secondary: function () { A.go('#/words'); } }
+                      : { primaryLabel: '🎉 All words found!' });
+          }
           idx++; if (idx >= list.length) finishRound(); else draw();
         }, mode === 'find' ? 700 : 1500);
       } else if (BY[key]) {                 // a different real word: that's a find too!

@@ -81,11 +81,7 @@
 
   /* bottom tab bar (tabs from the games / garden / words modules are added at start-up) */
   var tabs = [{ id: 'home', icon: '✏️', label: 'Practice', href: '#/', order: 10 }];
-  function tabbar(active) {
-    return '<nav class="tabbar" aria-label="Main">' + tabs.slice().sort(function (a, b) { return a.order - b.order; }).map(function (t) {
-      return '<button class="tab' + (active === t.id ? ' on' : '') + '" data-go="' + t.href + '"><span class="ti">' + t.icon + '</span><span class="tl">' + t.label + '</span></button>';
-    }).join('') + '</nav>';
-  }
+  function tabbar(active) { return '<i class="tabmark" data-tab="' + active + '" hidden></i>'; }   // the real bar is a fixed <nav> outside the scrolling screens
 
   /* ---------- small helpers ---------- */
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -183,9 +179,24 @@
 
   /* ---------- audio clips (recorded by native speakers) ---------- */
   function clipFor(it) { return AUDIO[it.s] ? AUDIO[it.s].f : null; }
-  function say(it, force) { var f = clipFor(it); if (f) return FX.clip(f, force); return Promise.resolve(false); }
+  // a word with no recording of its own is read character by character, if every character has a clip
+  function charClips(it) {
+    var ch = Array.from(it.s);
+    if (ch.length < 2) return null;
+    var urls = [];
+    for (var i = 0; i < ch.length; i++) { if (!AUDIO[ch[i]]) return null; urls.push(AUDIO[ch[i]].f); }
+    return urls;
+  }
+  function hasVoice(it) { return !!(clipFor(it) || charClips(it)); }
+  function say(it, force) {
+    var f = clipFor(it);
+    if (f) return FX.clip(f, force);
+    var seq = charClips(it);
+    if (seq) return FX.sequence(seq, force);
+    return Promise.resolve(false);
+  }
   function speakBtn(it) {
-    return clipFor(it) ? '<button class="speak" id="speak" aria-label="Hear it">🔊</button>' : '';
+    return hasVoice(it) ? '<button class="speak" id="speak" aria-label="Hear it">🔊</button>' : '';
   }
   function soundFailed(ok) { if (ok === false) hint('Could not play the sound. Check the volume, then open About and tap Sound check.'); }
   function bindSpeak(it) { var b = $('speak'); if (b) b.onclick = function () { say(it, true).then(soundFailed); }; }
@@ -728,7 +739,7 @@
     app: app, FX: FX, AUDIO: AUDIO, store: store, lessons: lessons.filter(function (L) { return !L.hidden; }), allLessons: lessons, labLesson: labLesson, routes: routes, tabs: tabs,
     $: $, go: go, later: later, shuffle: shuffle, esc: esc, row: row, glyph: glyph,
     pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc,
-    say: say, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
+    say: say, hasVoice: hasVoice, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
     bindTop: bindTop, earn: earn, spend: spend, walletPill: walletPill, tabbar: tabbar,
     wallet: function () { return wallet; },
     script: function () { return script; },
@@ -736,6 +747,21 @@
     onLeave: function (fn) { leaveFns.push(fn); }
   };
   (window.HANZI_MODS || []).forEach(function (m) { try { m(A); } catch (e) { if (window.console) console.error('module failed', e); } });
+
+  /* The bottom bar lives on <body>, OUTSIDE the scrolling screens, so iPhones/iPads can never scroll it away. */
+  var nav = document.createElement('nav');
+  nav.className = 'tabbar'; nav.id = 'tabbar'; nav.hidden = true; nav.setAttribute('aria-label', 'Main');
+  nav.innerHTML = tabs.slice().sort(function (a, b) { return a.order - b.order; }).map(function (t) {
+    return '<button class="tab" data-tab="' + t.id + '" data-go="' + t.href + '"><span class="ti">' + t.icon + '</span><span class="tl">' + t.label + '</span></button>';
+  }).join('');
+  document.body.appendChild(nav);
+  nav.addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('[data-go]') : null; if (t) go(t.getAttribute('data-go')); });
+  function syncNav() {
+    var m = app.querySelector('.tabmark');
+    nav.hidden = !m;
+    if (m) Array.prototype.forEach.call(nav.querySelectorAll('.tab'), function (b) { b.classList.toggle('on', b.getAttribute('data-tab') === m.getAttribute('data-tab')); });
+  }
+  new MutationObserver(syncNav).observe(app, { childList: true });
 
   route();
 })();

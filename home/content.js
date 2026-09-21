@@ -116,5 +116,22 @@ window.CONTENT = {
       { group: 'stretch', s: '现在', t: '現在', py: 'xian4 zai4', en: 'now', how: '现 (appear, now) + 在 (at) = right now.' },
       { group: 'stretch', s: '东西', t: '東西', py: 'dong1 xi5', en: 'thing, stuff', how: '东 (east) + 西 (west) = things! Everything from east to west.' }
     ]
-  }
+  },
+
+  /* SENTENCE BUILDER: sentences from her book's "read aloud" pages, cut into chunks she puts back in order.
+     chunks = simplified pieces, tchunks = the same pieces in traditional. py = numeric pinyin for the whole sentence. */
+  sentences: [
+    { chunks: ['我', '在家', '写字'], tchunks: ['我', '在家', '寫字'], py: 'wo3 zai4 jia1 xie3 zi4', en: 'I write characters at home.' },
+    { chunks: ['云云', '在学校', '学汉语'], tchunks: ['雲雲', '在學校', '學漢語'], py: 'yun2 yun2 zai4 xue2 xiao4 xue2 han4 yu3', en: 'Yunyun studies Chinese at school.' },
+    { chunks: ['方方', '在花园', '画画儿'], tchunks: ['方方', '在花園', '畫畫兒'], py: 'fang1 fang1 zai4 hua1 yuan2 hua4 huar4', en: 'Fangfang is drawing in the garden.' },
+    { chunks: ['老师', '教', '我们', '写汉字'], tchunks: ['老師', '教', '我們', '寫漢字'], py: 'lao3 shi1 jiao1 wo3 men5 xie3 han4 zi4', en: 'The teacher teaches us to write characters.' },
+    { chunks: ['妈妈', '教', '我们', '说汉语'], tchunks: ['媽媽', '教', '我們', '說漢語'], py: 'ma1 ma5 jiao1 wo3 men5 shuo1 han4 yu3', en: 'Mom teaches us to speak Chinese.' },
+    { chunks: ['奶奶', '教', '我们', '读儿歌'], tchunks: ['奶奶', '教', '我們', '讀兒歌'], py: 'nai3 nai5 jiao1 wo3 men5 du2 er2 ge1', en: 'Grandma teaches us to read nursery rhymes.' },
+    { chunks: ['我', '喜欢', '学', '中文'], tchunks: ['我', '喜歡', '學', '中文'], py: 'wo3 xi3 huan5 xue2 zhong1 wen2', en: 'I like to study Chinese.' },
+    { chunks: ['冬冬', '是', '我的', '好朋友'], tchunks: ['冬冬', '是', '我的', '好朋友'], py: 'dong1 dong1 shi4 wo3 de5 hao3 peng2 you5', en: 'Dongdong is my good friend.' },
+    { chunks: ['上午', '我', '去', '学校'], tchunks: ['上午', '我', '去', '學校'], py: 'shang4 wu3 wo3 qu4 xue2 xiao4', en: 'In the morning I go to school.' },
+    { chunks: ['天上', '的', '星星', '真', '好看'], tchunks: ['天上', '的', '星星', '真', '好看'], py: 'tian1 shang4 de5 xing1 xing5 zhen1 hao3 kan4', en: 'The stars in the sky are so pretty.' },
+    { chunks: ['我', '有', '两个', '好朋友'], tchunks: ['我', '有', '兩個', '好朋友'], py: 'wo3 you3 liang3 ge4 hao3 peng2 you5', en: 'I have two good friends.' },
+    { chunks: ['今天', '星期', '五'], tchunks: ['今天', '星期', '五'], py: 'jin1 tian1 xing1 qi1 wu3', en: 'Today is Friday.' }
+  ]
 };
