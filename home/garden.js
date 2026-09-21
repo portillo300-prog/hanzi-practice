@@ -154,6 +154,7 @@
     function close() { if (m.parentNode) m.parentNode.removeChild(m); }
     return { el: m, close: close };
   }
+  A.modal = modal;
 
   function confirmBuy(it) {
     var bal = A.wallet().bal;

@@ -38,6 +38,14 @@
     return Object.assign({ accent: '#4fd1c5', sticker: '⭐' }, L, { items: items });
   });
   function acc(L) { return theme === 'elena' ? (L.accentElena || '#e85a94') : L.accent; }
+  var labLesson = null;
+  if (C.lab && C.lab.words && C.lab.words.length) {
+    labLesson = { id: 'lab', number: 0, hidden: true, sticker: '🧩', accent: '#c792ea', accentElena: '#e85a94',
+      title: C.lab.title || { s: '词语', t: '詞語' }, py: 'ci2 yu3', en: 'Word Lab', characters: [], words: C.lab.words,
+      items: C.lab.words.map(function (w) { return Object.assign({ kind: 'w' }, w); }) };
+    lessons.push(labLesson);
+  }
+  function homeOf(L) { return L.hidden ? '#/words' : '#/l/' + L.id; }
   function keyOf(L, it) { return L.id + ':' + it.s; }
   function textOf(it) { return script === 't' ? (it.t || it.s) : it.s; }
   function titleOf(L) { return script === 't' ? L.title.t : L.title.s; }
@@ -209,6 +217,7 @@
   }
 
   function checkWriterBadge(L) {
+    if (L.hidden) return;
     var b = badge(L);
     if (b.writer || doneCount(L) < L.items.length) return;
     b.writer = true; store.set('badges', badges); earn(10);
@@ -231,7 +240,7 @@
       '<span class="emo' + (frac >= 1 ? ' full' : '') + '">' + emoji + '</span></span>';
   }
   function renderHome() {
-    var cards = lessons.map(function (L, idx) {
+    var cards = lessons.filter(function (L) { return !L.hidden; }).map(function (L, idx) {
       var n = doneCount(L), b = badges[L.id] || {};
       return '<button class="lesson-card" style="--acc:' + acc(L) + ';animation-delay:' + (idx * 0.08) + 's" data-go="#/l/' + L.id + '">' +
         ringHTML(n / L.items.length, acc(L), L.sticker) +
@@ -306,7 +315,7 @@
       : '';
     app.innerHTML =
       '<div class="practice" style="--acc:' + acc(L) + '">' +
-      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
+      '<div class="topbar"><button class="btn" data-go="' + homeOf(L) + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<div class="info">' + slots + '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + speakBtn(it) + '</div><div class="meaning">' + it.en + '</div><div class="hint" id="hint"></div></div>' +
       '<div class="boardwrap" id="bw"><div class="board" id="board"></div></div>' +
       '<div class="controls">' +
@@ -320,7 +329,7 @@
     bindTop(function () { renderPractice(L, idx); });
     bindSpeak(it);
     $('prev').onclick = function () { go('#/w/' + L.id + '/' + (idx - 1)); };
-    $('next').onclick = function () { go(idx + 1 < L.items.length ? '#/w/' + L.id + '/' + (idx + 1) : '#/l/' + L.id); };
+    $('next').onclick = function () { go(idx + 1 < L.items.length ? '#/w/' + L.id + '/' + (idx + 1) : homeOf(L)); };
     $('again').onclick = function () { clearTimeout(advanceTimer); hint(''); startChar(); };
     $('show').onclick = showMe;
     Array.prototype.forEach.call(app.querySelectorAll('[data-ci]'), function (b) {
@@ -456,7 +465,7 @@
     var shown = false;
     app.innerHTML =
       '<div class="read" style="--acc:' + acc(L) + '">' +
-      '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
+      '<div class="topbar"><button class="btn" data-go="' + homeOf(L) + '">‹ Back</button><span class="title">' + (idx + 1) + ' / ' + L.items.length + '</span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<button class="card" id="card" style="--n:' + Array.from(t).length + '" aria-label="Tap to show pinyin and meaning">' + row(t) + '</button>' +
       '<div class="reveal" id="rev"></div>' +
       '<div class="controls">' +
@@ -474,7 +483,7 @@
     $('card').onclick = flip;
     $('flip').onclick = flip;
     $('prev').onclick = function () { go('#/r/' + L.id + '/' + (idx - 1)); };
-    $('next').onclick = function () { go(idx + 1 < L.items.length ? '#/r/' + L.id + '/' + (idx + 1) : '#/l/' + L.id); };
+    $('next').onclick = function () { go(idx + 1 < L.items.length ? '#/r/' + L.id + '/' + (idx + 1) : homeOf(L)); };
     bindTop(function () { renderRead(L, idx); });
     paint();
   }
@@ -656,6 +665,7 @@
       '<div class="acard"><h2>写汉字 Hanzi Practice</h2><p>A little app for practicing Chinese characters: trace each stroke in the right order, see the pinyin with tone colors, and learn what it means. It works with no internet, and nothing you do here leaves the device — no accounts, no tracking.</p></div>' +
       '<div class="acard"><h2>Voice recordings</h2><p>The spoken characters and words are real recordings by native speakers, shared on Wikimedia Commons (Lingua Libre and the Chinese pronunciation set) under Creative Commons licenses. Thank you to everyone who lent their voice! Tap a character to see its recording page.</p>' +
       (speakers || '<p class="muted">Audio is coming soon.</p>') + '</div>' +
+      '<div class="acard"><h2>Words</h2><p>Ideas and pinyin for the words in the Word Lab were checked against <a href="https://cc-cedict.org" target="_blank" rel="noopener">CC-CEDICT</a> (Creative Commons Attribution-ShareAlike 4.0). The kid-friendly meanings were written by hand.</p></div>' +
       '<div class="acard"><h2>Stroke order</h2><p>Stroke animations use <a href="https://hanziwriter.org" target="_blank" rel="noopener">Hanzi Writer</a> (MIT License), with character data from <a href="https://github.com/skishore/makemeahanzi" target="_blank" rel="noopener">Make Me a Hanzi</a> and <a href="https://github.com/parsimonhi/animCJK" target="_blank" rel="noopener">AnimCJK</a>, based on the Arphic PL fonts (Arphic Public License).</p></div>' +
       '<div class="acard"><h2>Sound check</h2><p>Not hearing the voices or the chimes? Turn the volume up, make sure the device is not on silent, then tap the button.</p><button class="btn primary" id="soundtest">🔊 Play test sound</button><div id="soundout" class="soundout"></div></div>' +
       '<div class="acard"><h2>Sounds &amp; pictures</h2><p>Chimes and cheers are generated by the app itself. Emoji are drawn by your device.</p></div>' +
@@ -715,7 +725,7 @@
 
   /* ---------- API for the extra modules (games, garden, word lab) ---------- */
   var A = window.HANZI = {
-    app: app, FX: FX, AUDIO: AUDIO, store: store, lessons: lessons, routes: routes, tabs: tabs,
+    app: app, FX: FX, AUDIO: AUDIO, store: store, lessons: lessons.filter(function (L) { return !L.hidden; }), allLessons: lessons, labLesson: labLesson, routes: routes, tabs: tabs,
     $: $, go: go, later: later, shuffle: shuffle, esc: esc, row: row, glyph: glyph,
     pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc,
     say: say, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,

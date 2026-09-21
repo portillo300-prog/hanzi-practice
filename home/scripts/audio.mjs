@@ -117,6 +117,7 @@ for (const L of C.lessons) {
   for (const c of L.characters) items.set(c.s, { key: c.s, kind: 'c', py: c.py, alt: c.alt });
   for (const w of L.words) if (!items.has(w.s)) items.set(w.s, { key: w.s, kind: 'w', py: w.py });
 }
+for (const w of (C.lab && C.lab.words) || []) if (!items.has(w.s)) items.set(w.s, { key: w.s, kind: 'w', py: w.py });
 
 const hex = (s) => 'u' + Array.from(s).map((ch) => ch.codePointAt(0).toString(16)).join('_');
 const manifestFile = path.join(cacheDir, 'manifest.json');

@@ -40,6 +40,8 @@ for (const L of C.lessons) {
   for (const it of [...L.characters, ...L.words]) addPair(it.s, it.t, `${L.id} ${it.s}`, it.py);
   for (const c of L.characters) if ([...c.s].length !== 1) problems.push(`${L.id}: "${c.s}" is in characters but is not a single character`);
 }
+for (const w of (C.lab && C.lab.words) || []) addPair(w.s, w.t, `lab ${w.s}`, w.py);
+if (C.lab && C.lab.title) addPair(C.lab.title.s, C.lab.title.t, 'lab title');
 addPair(C.appTitle.s, C.appTitle.t, 'app title');
 if (problems.length) { console.error('\nProblems:\n - ' + problems.join('\n - ')); process.exit(1); }
 
@@ -63,7 +65,7 @@ console.log(`strokes.js: ${Object.keys(out).length} characters (${[...need.value
 
 // stamp a version so devices refresh their offline copy
 const audioFiles = fs.existsSync(path.join(root, 'audio')) ? fs.readdirSync(path.join(root, 'audio')).filter((f) => f.endsWith('.m4a')).sort().map((f) => 'audio/' + f) : [];
-const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'garden.js', 'games.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
+const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'garden.js', 'games.js', 'words.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
 const files = [...core, ...audioFiles];
 const h = crypto.createHash('sha1');
 for (const f of files) h.update(fs.readFileSync(path.join(root, f)));

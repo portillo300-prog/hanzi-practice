@@ -83,5 +83,38 @@ window.CONTENT = {
         { s: '朋友', t: '朋友', py: 'peng2 you5', en: 'friend' }
       ]
     }
-  ]
+  ],
+
+  /* WORD LAB: extra words she can discover by combining characters from her book.
+     group 'starter' = built only from her book's characters; 'stretch' = adds one or two NEW characters.
+     `how` is the little "why it means that" story shown on the word card. */
+  lab: {
+    title: { s: '词语', t: '詞語' },
+    words: [
+      { group: 'starter', s: '学生', t: '學生', py: 'xue2 sheng5', en: 'student', how: '学 (study) + 生 (a person growing up) = student!' },
+      { group: 'starter', s: '同学', t: '同學', py: 'tong2 xue2', en: 'classmate', how: '同 (same) + 学 (study) = people who study together: classmates!' },
+      { group: 'starter', s: '上学', t: '上學', py: 'shang4 xue2', en: 'go to school', how: '上 (go to) + 学 (study) = go to school!' },
+      { group: 'starter', s: '小学', t: '小學', py: 'xiao3 xue2', en: 'elementary school', how: '小 (small) + 学 (school) = elementary school.' },
+      { group: 'starter', s: '大学', t: '大學', py: 'da4 xue2', en: 'university, college', how: '大 (big) + 学 (school) = university!' },
+      { group: 'starter', s: '生日', t: '生日', py: 'sheng1 ri4', en: 'birthday', how: '生 (born) + 日 (day) = birthday!' },
+      { group: 'starter', s: '老师', t: '老師', py: 'lao3 shi1', en: 'teacher', how: '老 (wise, experienced) + 师 (master) = teacher.' },
+      { group: 'starter', s: '开心', t: '開心', py: 'kai1 xin1', en: 'happy', how: '开 (open) + 心 (heart) = an open heart: happy!' },
+      { group: 'starter', s: '小心', t: '小心', py: 'xiao3 xin1', en: 'be careful', how: '小 (small) + 心 (heart) = be careful, take care.' },
+      { group: 'starter', s: '听写', t: '聽寫', py: 'ting1 xie3', en: 'dictation', how: '听 (listen) + 写 (write) = dictation: listen, then write!' },
+      { group: 'starter', s: '星星', t: '星星', py: 'xing1 xing5', en: 'star', how: '星 (star) twice = twinkling stars!' },
+      { group: 'starter', s: '好朋友', t: '好朋友', py: 'hao3 peng2 you5', en: 'good friend', how: '好 (good) + 朋友 (friend) = good friend.' },
+      { group: 'starter', s: '星期', t: '星期', py: 'xing1 qi1', en: 'week', how: '星 (star) + 期 (period of time) = week. Add 一 to make Monday!' },
+      { group: 'stretch', s: '学习', t: '學習', py: 'xue2 xi2', en: 'to study, to learn', how: '学 (study) + 习 (practice) = to study and practice!' },
+      { group: 'stretch', s: '先生', t: '先生', py: 'xian1 sheng5', en: 'Mr., sir', how: '先 (first) + 生 (born) = "born first": Mr., sir.' },
+      { group: 'stretch', s: '生活', t: '生活', py: 'sheng1 huo2', en: 'life, daily life', how: '生 (life) + 活 (alive) = life, daily life.' },
+      { group: 'stretch', s: '医生', t: '醫生', py: 'yi1 sheng1', en: 'doctor', how: '医 (medicine) + 生 (person) = doctor.' },
+      { group: 'stretch', s: '教室', t: '教室', py: 'jiao4 shi4', en: 'classroom', how: '教 (teach) + 室 (room) = classroom.' },
+      { group: 'stretch', s: '唱歌', t: '唱歌', py: 'chang4 ge1', en: 'to sing', how: '唱 (sing) + 歌 (song) = to sing a song!' },
+      { group: 'stretch', s: '欢迎', t: '歡迎', py: 'huan1 ying2', en: 'welcome', how: '欢 (joyful) + 迎 (greet) = welcome!' },
+      { group: 'stretch', s: '名字', t: '名字', py: 'ming2 zi5', en: 'name', how: '名 (name) + 字 (character) = a name!' },
+      { group: 'stretch', s: '问题', t: '問題', py: 'wen4 ti2', en: 'question', how: '问 (ask) + 题 (topic) = a question.' },
+      { group: 'stretch', s: '现在', t: '現在', py: 'xian4 zai4', en: 'now', how: '现 (appear, now) + 在 (at) = right now.' },
+      { group: 'stretch', s: '东西', t: '東西', py: 'dong1 xi5', en: 'thing, stuff', how: '东 (east) + 西 (west) = things! Everything from east to west.' }
+    ]
+  }
 };
