@@ -48,6 +48,8 @@
   function homeOf(L) { return L.hidden ? '#/words' : '#/l/' + L.id; }
   // meanings shown in games/quizzes are kept short and plain: no parenthetical notes
   function plainEn(t) { return String(t).replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim(); }
+  // two items are a "clash" when a child could not tell them apart from the clue (same pinyin + tone, or the same English meaning)
+  function clash(a, b) { return a.s !== b.s && (pinyinText(a.py) === pinyinText(b.py) || plainEn(a.en).toLowerCase() === plainEn(b.en).toLowerCase()); }
   function keyOf(L, it) { return L.id + ':' + it.s; }
   function textOf(it) { return script === 't' ? (it.t || it.s) : it.s; }
   function titleOf(L) { return script === 't' ? L.title.t : L.title.s; }
@@ -293,6 +295,7 @@
       '<div class="screen" style="--acc:' + acc(L) + '">' +
       '<div class="topbar"><button class="btn" data-go="#/">‹ Home</button>' + themeSeg() + '<span class="spacer"></span>' + '<span class="tools">' + soundBtn() + scriptToggle() + '</span>' + '</div>' +
       '<div class="lesson-head"><div class="zh">' + row(titleOf(L)) + '</div>' + pinyinHTML(L.py, null, 'sm') + '<div class="en">Lesson ' + L.number + ' · ' + L.en + '</div></div>' +
+      (L.note ? '<div class="lnote"><b>💡 Good to know</b> ' + L.note + '</div>' : '') +
       '<div class="modebar"><div class="seg" role="group" aria-label="Mode">' +
       '<button data-mode="write" class="' + (mode === 'write' ? 'on' : '') + '">✏️ Write</button>' +
       '<button data-mode="read" class="' + (mode === 'read' ? 'on' : '') + '">👀 Read</button></div></div>' +
@@ -548,7 +551,7 @@
       }).join('') + '</div>';
     } else if (q.t === 'pick' || q.t === 'listen') {
       var pool = it.kind === 'w' ? L.words : L.characters;
-      var picks = shuffle(pool.filter(function (x) { return x.s !== it.s; })).slice(0, 3);
+      var picks = shuffle(pool.filter(function (x) { return x.s !== it.s && !clash(x, it); })).slice(0, 3);
       var options = shuffle([it].concat(picks));
       if (q.t === 'listen') {
         label = 'Listen, then tap the right one';
@@ -752,6 +755,7 @@
     say: say, hasVoice: hasVoice, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
     bindTop: bindTop, earn: earn, spend: spend, walletPill: walletPill, tabbar: tabbar,
     wallet: function () { return wallet; },
+    cssVar: cssVar, nudgeHTML: nudgeHTML, clash: clash,
     script: function () { return script; },
     isDone: function (L, it) { return !!done[keyOf(L, it)]; },
     onLeave: function (fn) { leaveFns.push(fn); }

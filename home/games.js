@@ -135,7 +135,8 @@
     var speed = reduced ? 0.6 : 1;
 
     function randomItem(avoid) {
-      var options = pool.filter(function (c) { return avoid.indexOf(c.s) < 0; });
+      var options = pool.filter(function (c) { return avoid.indexOf(c.s) < 0 && !(target && A.clash(c, target)); });
+      if (!options.length) options = pool.filter(function (c) { return avoid.indexOf(c.s) < 0; });
       if (!options.length) options = pool;
       return options[Math.floor(Math.random() * options.length)];
     }
@@ -190,7 +191,7 @@
       A.bindPromptSound(target, kind, function () { return alive && target === seq[idx]; });
       var visible = bubbles.filter(onScreen);
       var host = visible.length ? visible[Math.floor(Math.random() * visible.length)] : bubbles[0];
-      bubbles.forEach(function (b) { if (b !== host && b.item.s === target.s) b.item = randomItem(shownChars().concat([target.s])); });
+      bubbles.forEach(function (b) { if (b !== host && (b.item.s === target.s || A.clash(b.item, target))) b.item = randomItem(shownChars().concat([target.s])); });
       host.item = target;
       bubbles.forEach(paint);
     }

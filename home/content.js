@@ -14,6 +14,59 @@ window.CONTENT = {
   appTitle: { s: '写汉字', t: '寫漢字' },
   lessons: [
     {
+      id: 'l0',
+      number: 0,
+      sticker: '🌱',
+      accent: '#8ab4ff',
+      accentElena: '#b57be0',
+      title: { s: '我和我的家', t: '我和我的家' },
+      py: 'wo3 he2 wo3 de5 jia1',
+      en: 'Me and My Family (review)',
+      note: '的 works like the English "\'s": 妈妈的手机 = Mom\'s phone, and 我的 = my. Put 不 in front of 是 to say "is not": 不是 (bú shì).',
+      characters: [
+        { s: '我', t: '我', py: 'wo3', en: 'I, me' },
+        { s: '你', t: '你', py: 'ni3', en: 'you' },
+        { s: '他', t: '他', py: 'ta1', en: 'he, him' },
+        { s: '她', t: '她', py: 'ta1', en: 'she, her' },
+        { s: '们', t: '們', py: 'men5', en: 'more than one (我们 = we)' },
+        { s: '是', t: '是', py: 'shi4', en: 'is, am, are' },
+        { s: '不', t: '不', py: 'bu4', en: 'not' },
+        { s: '的', t: '的', py: 'de5', en: 'belongs to (like \'s)' },
+        { s: '妈', t: '媽', py: 'ma1', en: 'mom' },
+        { s: '爸', t: '爸', py: 'ba4', en: 'dad' },
+        { s: '哥', t: '哥', py: 'ge1', en: 'older brother' },
+        { s: '姐', t: '姐', py: 'jie3', en: 'older sister' },
+        { s: '弟', t: '弟', py: 'di4', en: 'little brother' },
+        { s: '妹', t: '妹', py: 'mei4', en: 'little sister' },
+        { s: '奶', t: '奶', py: 'nai3', en: 'grandma' },
+        { s: '爷', t: '爺', py: 'ye2', en: 'grandpa' },
+        { s: '猫', t: '貓', py: 'mao1', en: 'cat' },
+        { s: '狗', t: '狗', py: 'gou3', en: 'dog' },
+        { s: '手', t: '手', py: 'shou3', en: 'hand' },
+        { s: '机', t: '機', py: 'ji1', en: 'machine' },
+        { s: '电', t: '電', py: 'dian4', en: 'electric' },
+        { s: '脑', t: '腦', py: 'nao3', en: 'brain' }
+      ],
+      words: [
+        { s: '我们', t: '我們', py: 'wo3 men5', en: 'we, us' },
+        { s: '你们', t: '你們', py: 'ni3 men5', en: 'you (more than one)' },
+        { s: '他们', t: '他們', py: 'ta1 men5', en: 'they (boys or mixed)' },
+        { s: '她们', t: '她們', py: 'ta1 men5', en: 'they (girls)' },
+        { s: '不是', t: '不是', py: 'bu2 shi4', en: 'is not' },
+        { s: '我的', t: '我的', py: 'wo3 de5', en: 'my' },
+        { s: '妈妈', t: '媽媽', py: 'ma1 ma5', en: 'mom' },
+        { s: '爸爸', t: '爸爸', py: 'ba4 ba5', en: 'dad' },
+        { s: '哥哥', t: '哥哥', py: 'ge1 ge5', en: 'older brother' },
+        { s: '姐姐', t: '姐姐', py: 'jie3 jie5', en: 'older sister' },
+        { s: '弟弟', t: '弟弟', py: 'di4 di5', en: 'little brother' },
+        { s: '妹妹', t: '妹妹', py: 'mei4 mei5', en: 'little sister' },
+        { s: '奶奶', t: '奶奶', py: 'nai3 nai5', en: 'grandma' },
+        { s: '爷爷', t: '爺爺', py: 'ye2 ye5', en: 'grandpa' },
+        { s: '手机', t: '手機', py: 'shou3 ji1', en: 'cell phone' },
+        { s: '电脑', t: '電腦', py: 'dian4 nao3', en: 'computer' }
+      ]
+    },
+    {
       id: 'l1',
       number: 1,
       sticker: '🐼',          // sticker she earns for this lesson
@@ -118,6 +171,43 @@ window.CONTENT = {
     ]
   },
 
+
+  /* FILL THE BLANK: short phrases. b = [start, length] pairs, each one is a puzzle (write the missing 1-2 characters). */
+  fill: [
+    { s: '他是我的哥哥', t: '他是我的哥哥', py: 'ta1 shi4 wo3 de5 ge1 ge5', en: 'He is my older brother.', b: [[0, 1], [1, 1], [3, 1], [4, 2]] },
+    { s: '她是我的姐姐', t: '她是我的姐姐', py: 'ta1 shi4 wo3 de5 jie3 jie5', en: 'She is my older sister.', b: [[0, 1], [2, 1], [4, 2]] },
+    { s: '你是我的弟弟', t: '你是我的弟弟', py: 'ni3 shi4 wo3 de5 di4 di5', en: 'You are my little brother.', b: [[0, 1], [4, 2]] },
+    { s: '她们是我的妹妹', t: '她們是我的妹妹', py: 'ta1 men5 shi4 wo3 de5 mei4 mei5', en: 'They are my little sisters.', b: [[0, 2], [5, 2]] },
+    { s: '我们不是猫', t: '我們不是貓', py: 'wo3 men5 bu2 shi4 mao1', en: 'We are not cats.', b: [[0, 2], [2, 2], [4, 1]] },
+    { s: '我不是猫', t: '我不是貓', py: 'wo3 bu2 shi4 mao1', en: 'I am not a cat.', b: [[1, 2], [3, 1]] },
+    { s: '他不是我的爸爸', t: '他不是我的爸爸', py: 'ta1 bu2 shi4 wo3 de5 ba4 ba5', en: 'He is not my dad.', b: [[0, 1], [1, 2], [5, 2]] },
+    { s: '我的爸爸不是爷爷', t: '我的爸爸不是爺爺', py: 'wo3 de5 ba4 ba5 bu2 shi4 ye2 ye5', en: 'My dad is not grandpa.', b: [[1, 1], [2, 2], [6, 2]] },
+    { s: '奶奶是妈妈的妈妈', t: '奶奶是媽媽的媽媽', py: 'nai3 nai5 shi4 ma1 ma5 de5 ma1 ma5', en: 'Grandma is mom\'s mom.', b: [[0, 2], [5, 1]] },
+    { s: '我的手机', t: '我的手機', py: 'wo3 de5 shou3 ji1', en: 'my phone', b: [[1, 1], [2, 2]] },
+    { s: '你的电脑', t: '你的電腦', py: 'ni3 de5 dian4 nao3', en: 'your computer', b: [[0, 1], [2, 2]] },
+    { s: '妈妈的手机', t: '媽媽的手機', py: 'ma1 ma5 de5 shou3 ji1', en: 'Mom\'s phone', b: [[0, 2], [2, 1]] },
+    { s: '爸爸的电脑', t: '爸爸的電腦', py: 'ba4 ba5 de5 dian4 nao3', en: 'Dad\'s computer', b: [[0, 2], [3, 2]] },
+    { s: '奶奶的猫', t: '奶奶的貓', py: 'nai3 nai5 de5 mao1', en: 'Grandma\'s cat', b: [[3, 1]] },
+    { s: '爷爷的狗', t: '爺爺的狗', py: 'ye2 ye5 de5 gou3', en: 'Grandpa\'s dog', b: [[0, 2], [3, 1]] }
+  ],
+
+  /* PICTURE WORDS: a picture + English, she writes the word. */
+  pics: [
+    { s: '我', t: '我', py: 'wo3', en: 'I, me', e: '🙋' },
+    { s: '你', t: '你', py: 'ni3', en: 'you', e: '👉' },
+    { s: '他', t: '他', py: 'ta1', en: 'he', e: '👦' },
+    { s: '她', t: '她', py: 'ta1', en: 'she', e: '👧' },
+    { s: '妈妈', t: '媽媽', py: 'ma1 ma5', en: 'mom', e: '👩' },
+    { s: '爸爸', t: '爸爸', py: 'ba4 ba5', en: 'dad', e: '👨' },
+    { s: '奶奶', t: '奶奶', py: 'nai3 nai5', en: 'grandma', e: '👵' },
+    { s: '爷爷', t: '爺爺', py: 'ye2 ye5', en: 'grandpa', e: '👴' },
+    { s: '猫', t: '貓', py: 'mao1', en: 'cat', e: '🐱' },
+    { s: '狗', t: '狗', py: 'gou3', en: 'dog', e: '🐶' },
+    { s: '手', t: '手', py: 'shou3', en: 'hand', e: '✋' },
+    { s: '手机', t: '手機', py: 'shou3 ji1', en: 'cell phone', e: '📱' },
+    { s: '电脑', t: '電腦', py: 'dian4 nao3', en: 'computer', e: '💻' }
+  ],
+
   /* SENTENCE BUILDER: sentences from her book's "read aloud" pages, cut into chunks she puts back in order.
      chunks = simplified pieces, tchunks = the same pieces in traditional. py = numeric pinyin for the whole sentence. */
   sentences: [
@@ -132,6 +222,11 @@ window.CONTENT = {
     { chunks: ['上午', '我', '去', '学校'], tchunks: ['上午', '我', '去', '學校'], py: 'shang4 wu3 wo3 qu4 xue2 xiao4', en: 'In the morning I go to school.' },
     { chunks: ['天上', '的', '星星', '真', '好看'], tchunks: ['天上', '的', '星星', '真', '好看'], py: 'tian1 shang4 de5 xing1 xing5 zhen1 hao3 kan4', en: 'The stars in the sky are so pretty.' },
     { chunks: ['我', '有', '两个', '好朋友'], tchunks: ['我', '有', '兩個', '好朋友'], py: 'wo3 you3 liang3 ge4 hao3 peng2 you5', en: 'I have two good friends.' },
+    { chunks: ['他', '是', '我的', '哥哥'], tchunks: ['他', '是', '我的', '哥哥'], py: 'ta1 shi4 wo3 de5 ge1 ge5', en: 'He is my older brother.' },
+    { chunks: ['她', '是', '我的', '姐姐'], tchunks: ['她', '是', '我的', '姐姐'], py: 'ta1 shi4 wo3 de5 jie3 jie5', en: 'She is my older sister.' },
+    { chunks: ['我们', '不是', '猫'], tchunks: ['我們', '不是', '貓'], py: 'wo3 men5 bu2 shi4 mao1', en: 'We are not cats.' },
+    { chunks: ['奶奶', '是', '妈妈的', '妈妈'], tchunks: ['奶奶', '是', '媽媽的', '媽媽'], py: 'nai3 nai5 shi4 ma1 ma5 de5 ma1 ma5', en: 'Grandma is mom\'s mom.' },
+    { chunks: ['我的', '爸爸', '不是', '爷爷'], tchunks: ['我的', '爸爸', '不是', '爺爺'], py: 'wo3 de5 ba4 ba5 bu2 shi4 ye2 ye5', en: 'My dad is not grandpa.' },
     { chunks: ['今天', '星期', '五'], tchunks: ['今天', '星期', '五'], py: 'jin1 tian1 xing1 qi1 wu3', en: 'Today is Friday.' }
   ]
 };

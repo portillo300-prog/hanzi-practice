@@ -43,6 +43,8 @@ for (const L of C.lessons) {
 for (const w of (C.lab && C.lab.words) || []) addPair(w.s, w.t, `lab ${w.s}`, w.py);
 if (C.lab && C.lab.title) addPair(C.lab.title.s, C.lab.title.t, 'lab title');
 for (const st of C.sentences || []) { if (st.chunks.length !== st.tchunks.length) problems.push('sentence chunk count mismatch: ' + st.chunks.join('')); st.chunks.forEach((c, i) => addPair(c, st.tchunks[i] || c, 'sentence ' + st.chunks.join(''))); }
+for (const f of C.fill || []) addPair(f.s, f.t, 'fill ' + f.s, f.py);
+for (const p of C.pics || []) addPair(p.s, p.t, 'pic ' + p.s, p.py);
 addPair(C.appTitle.s, C.appTitle.t, 'app title');
 if (problems.length) { console.error('\nProblems:\n - ' + problems.join('\n - ')); process.exit(1); }
 
@@ -66,7 +68,7 @@ console.log(`strokes.js: ${Object.keys(out).length} characters (${[...need.value
 
 // stamp a version so devices refresh their offline copy
 const audioFiles = fs.existsSync(path.join(root, 'audio')) ? fs.readdirSync(path.join(root, 'audio')).filter((f) => f.endsWith('.m4a')).sort().map((f) => 'audio/' + f) : [];
-const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'garden.js', 'games.js', 'games2.js', 'words.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
+const core = ['index.html', 'styles.css', 'app.js', 'fx.js', 'garden.js', 'games.js', 'games2.js', 'fill.js', 'words.js', 'content.js', 'strokes.js', 'audio-manifest.js', 'manifest.webmanifest', 'vendor/hanzi-writer.min.js'];
 const files = [...core, ...audioFiles];
 const h = crypto.createHash('sha1');
 for (const f of files) h.update(fs.readFileSync(path.join(root, f)));

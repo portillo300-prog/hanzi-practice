@@ -91,7 +91,9 @@
   function memoryPlay() {
     var sel = A.selectedLessons(), lesson = firstLesson(), pool = A.poolFor(sel);
     if (pool.length < 6) return A.go('#/g/memory');
-    var picks = A.shuffle(pool.slice()).slice(0, 6), cards = [];
+    var picks = [], cards = [];   // six characters that can never be mixed up (no shared pinyin or meaning)
+    A.shuffle(pool.slice()).forEach(function (c) { if (picks.length < 6 && !picks.some(function (p) { return A.clash(p, c); })) picks.push(c); });
+    if (picks.length < 6) return A.go('#/g/memory');
     picks.forEach(function (c, i) { cards.push({ k: i, kind: 'g', item: c }); cards.push({ k: i, kind: 'p', item: c }); });
     cards = A.shuffle(cards);
     app.innerHTML = frame(lesson, ' memory') + '<div class="gprompt"><div class="gq">Find the pairs</div><div class="mv" id="mv">Moves: 0</div></div>' +
@@ -138,48 +140,58 @@
 
   function treasurePlay() {
     var sel = A.selectedLessons(), lesson = firstLesson(), pool = A.poolFor(sel);
-    if (pool.length < 6) return A.go('#/g/treasure');
-    var cells = Math.min(12, pool.length >= 12 ? 12 : pool.length >= 9 ? 9 : 6);
-    var seq = A.shuffle(pool.slice()).slice(0, ROUNDS), idx = 0, miss = 0, good = 0, locked = false, alive = true;
+    var cells = pool.length >= 12 ? 12 : pool.length >= 9 ? 9 : 6;
+    // one garden for the whole game: characters that can never be mixed up (no shared pinyin or meaning)
+    var board = [];
+    A.shuffle(pool.slice()).forEach(function (c) { if (board.length < cells && !board.some(function (b) { return A.clash(b, c); })) board.push(c); });
+    if (board.length < 6) return A.go('#/g/treasure');
+    cells = board.length >= 12 ? 12 : board.length >= 9 ? 9 : 6; board = board.slice(0, cells);
+    var order = A.shuffle(board.slice()), total = Math.min(ROUNDS, cells);
+    var seq = order.slice(0, total), idx = 0, miss = 0, good = 0, locked = true, alive = true, found = {};
     var covers = ['🌸', '🌼', '🌷', '🌺', '🌻', '🌹'];
-    app.innerHTML = frame(lesson, ' treasure') + '<div class="gprompt" id="gprompt"></div><div class="fgrid" id="fgrid"></div></div>';
+    app.innerHTML = frame(lesson, ' treasure') + '<div class="gprompt" id="gprompt"></div><div class="fgrid n' + cells + '" id="fgrid"></div></div>';
     A.bindTop(function () {});
     $('gquit').onclick = function () { A.go('#/g/treasure'); };
     A.onLeave(function () { alive = false; });
+    var tiles = A.shuffle(board.slice());
+    $('fgrid').innerHTML = tiles.map(function (c, i) {
+      return '<button class="fl" data-i="' + i + '"><span class="fl-in"><span class="fl-cover">' + covers[i % covers.length] + '</span><span class="fl-card">' + A.row(A.textOf(c)) + '</span></span></button>';
+    }).join('');
+    var els = Array.prototype.slice.call(app.querySelectorAll('.fl'));
+    // the garden stays the same all game; flowers you peek at stay open, so you learn where things are
     function deal() {
       if (!alive) return;
       if (idx >= seq.length) { alive = false; return win(treasureCfg, lesson, good, seq.length); }
       var t = seq[idx]; miss = 0; locked = false;
       $('gprog').textContent = (idx + 1) + ' / ' + seq.length;
       var kind = A.promptKind(t);
-      $('gprompt').innerHTML = A.promptHTML(t, kind, 'Discover the character') + '<div class="gtry gsoft">🌸 Tap a flower to peek under it. Wrong one? It closes, so try another!</div>';
+      $('gprompt').innerHTML = A.promptHTML(t, kind, 'Discover the character') + '<div class="gtry gsoft">🌸 Tap a flower to look under it. Flowers you open stay open, so remember where things are!</div>';
       A.bindPromptSound(t, kind, function () { return alive && seq[idx] === t; });
-      var others = A.shuffle(pool.filter(function (c) { return c.s !== t.s; })).slice(0, cells - 1), row = A.shuffle([t].concat(others));
-      $('fgrid').className = 'fgrid n' + cells;
-      $('fgrid').innerHTML = row.map(function (c, i) {
-        return '<button class="fl" data-ok="' + (c === t ? 1 : 0) + '"><span class="fl-in"><span class="fl-cover">' + covers[i % covers.length] + '</span><span class="fl-card">' + A.row(A.textOf(c)) + '</span></span></button>';
-      }).join('');
-      Array.prototype.forEach.call(app.querySelectorAll('.fl'), function (f) {
-        f.onclick = function () {
-          if (locked || f.classList.contains('open') || !alive) return;
-          f.classList.add('open'); FX.tink();
-          if (f.getAttribute('data-ok') === '1') {
-            locked = true; if (miss === 0) good++;
-            f.classList.add('treasure'); FX.ding(); A.say(t, false);
-            var r = f.getBoundingClientRect(); FX.confetti({ x: (r.left + r.width / 2) / window.innerWidth, y: (r.top + r.height / 2) / window.innerHeight, n: 34 });
-            idx++; setTimeout(deal, 1300);
-          } else {
-            miss++; FX.oops();
-            setTimeout(function () { if (alive) f.classList.remove('open'); }, 1000);
-          }
-        };
-      });
     }
-    deal();
+    els.forEach(function (f, i) {
+      f.onclick = function () {
+        var t = seq[idx], c = tiles[i];
+        if (locked || !alive || f.classList.contains('got') || (f.classList.contains('open') && c !== t)) return;
+        f.classList.add('open'); FX.tink();
+        if (c === t) {
+          locked = true; if (miss === 0) good++;
+          f.classList.add('treasure'); FX.ding(); A.say(t, false);
+          var r = f.getBoundingClientRect(); FX.confetti({ x: (r.left + r.width / 2) / window.innerWidth, y: (r.top + r.height / 2) / window.innerHeight, n: 34 });
+          found[t.s] = true; idx++;
+          setTimeout(function () { f.classList.remove('treasure'); f.classList.add('got'); deal(); }, 1300);
+        } else {
+          miss++; FX.oops(); f.classList.add('seen');
+        }
+      };
+    });
+    // a quick look at the whole garden first, then the flowers close
+    $('gprompt').innerHTML = '<div class="gq">Look closely! 👀</div><div class="gmean">Remember where everything is…</div>';
+    els.forEach(function (f) { f.classList.add('open'); });
+    setTimeout(function () { if (!alive) return; els.forEach(function (f) { f.classList.remove('open'); }); setTimeout(deal, 600); }, 3200);
   }
 
   /* ---------------- Sentence Builder ---------------- */
-  var sentCfg = { id: 'sentences', order: 70, name: 'Sentence Builder', icon: '🧱', tag: 'Put the words in order!', how: 'These sentences come from your book. Tap the words in the right order to build each one!', done: 'Sentences built!', noChips: true, unit: ' sentences on the first try' };
+  var sentCfg = { id: 'sentences', order: 70, name: 'Sentence Builder', icon: '🧱', tag: 'Put the words in order!', how: 'These sentences use the words you know. Tap the words in the right order to build each one!', done: 'Sentences built!', noChips: true, unit: ' sentences on the first try' };
   reg(sentCfg, sentencePlay);
 
   function sentencePlay() {
