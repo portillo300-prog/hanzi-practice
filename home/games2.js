@@ -152,10 +152,10 @@
       var t = seq[idx]; miss = 0; locked = false;
       $('gprog').textContent = (idx + 1) + ' / ' + seq.length;
       var kind = A.promptKind(t);
-      $('gprompt').innerHTML = A.promptHTML(t, kind, 'Discover the character');
+      $('gprompt').innerHTML = A.promptHTML(t, kind, 'Discover the character') + '<div class="gtry gsoft">🌸 Tap a flower to peek under it. Wrong one? It closes, so try another!</div>';
       A.bindPromptSound(t, kind, function () { return alive && seq[idx] === t; });
       var others = A.shuffle(pool.filter(function (c) { return c.s !== t.s; })).slice(0, cells - 1), row = A.shuffle([t].concat(others));
-      $('fgrid').style.setProperty('--cols', cells === 12 ? 3 : 3);
+      $('fgrid').className = 'fgrid n' + cells;
       $('fgrid').innerHTML = row.map(function (c, i) {
         return '<button class="fl" data-ok="' + (c === t ? 1 : 0) + '"><span class="fl-in"><span class="fl-cover">' + covers[i % covers.length] + '</span><span class="fl-card">' + A.row(A.textOf(c)) + '</span></span></button>';
       }).join('');

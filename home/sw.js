@@ -1,6 +1,6 @@
 // Offline engine: saves the whole app on first open, then serves it from the device.
 // When online, it quietly refreshes the saved copy so new words show up on the next open.
-const VERSION = '661cd49a11';
+const VERSION = 'c6e7dbb999';
 const CACHE = 'hanzi-' + VERSION;
 const ASSETS = [
   './',

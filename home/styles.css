@@ -738,9 +738,9 @@ body {
 
 /* memory */
 .mv { font-size: 22px; font-weight: 800; color: var(--gold); }
-.mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-content: center; padding: 6px 4px 10px; min-height: 0; }
-@media (min-width: 620px) { .mgrid { grid-template-columns: repeat(4, 1fr); } }
-.mc { aspect-ratio: 3 / 4; perspective: 700px; border-radius: 20px; }
+.mgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 10px; padding: 6px 4px 10px; min-height: 0; overflow: hidden; }
+@media (orientation: landscape) { .mgrid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.mc { perspective: 700px; border-radius: 20px; min-height: 0; min-width: 0; }
 .mc-in { position: relative; display: block; width: 100%; height: 100%; transition: transform .45s; transform-style: preserve-3d; }
 .mc.flip .mc-in, .mc.done .mc-in { transform: rotateY(180deg); }
 .mc-back, .mc-front { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 20px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 2px solid var(--line); }
@@ -750,8 +750,9 @@ body {
 .mc.done .mc-front { border-color: var(--gold); background: var(--ok-bg); }
 
 /* treasure garden */
-.fgrid { display: grid; grid-template-columns: repeat(var(--cols, 3), 1fr); gap: 10px; align-content: center; padding: 6px 4px 10px; min-height: 0; }
-.fl { aspect-ratio: 1; perspective: 600px; border-radius: 22px; }
+.fgrid { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 10px; padding: 6px 4px 10px; min-height: 0; overflow: hidden; }
+@media (orientation: landscape) { .fgrid.n12 { --cols: 4; } .fgrid.n6 { --cols: 3; } }
+.fl { perspective: 600px; border-radius: 22px; min-height: 0; min-width: 0; }
 .fl-in { position: relative; display: block; width: 100%; height: 100%; transition: transform .4s; transform-style: preserve-3d; }
 .fl.open .fl-in { transform: rotateY(180deg); }
 .fl-cover, .fl-card { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 22px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -774,3 +775,5 @@ body {
 /* crisp characters on stars/fish: no filters or extra layers on the moving shapes */
 .bubble.b-starb { filter: none; text-shadow: none; }
 .bubble .glyph { shape-rendering: geometricPrecision; }
+
+.gsoft { color: var(--muted); font-size: clamp(15px, 2.6vmin, 20px); }
