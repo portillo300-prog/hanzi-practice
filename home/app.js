@@ -281,6 +281,16 @@
     bindTop(renderHome);
   }
 
+  function storyButtons(L) {
+    var list = (C.stories || []).filter(function (st) { return st.lesson === L.id; });
+    if (!list.length) return '';
+    var sd = store.get('storydone', {});
+    return list.map(function (st) {
+      var d = sd[st.id] || {};
+      return '<button class="quiz-btn story-btn" style="--acc:' + acc(L) + '" data-go="#/s/' + st.id + '"><span class="qi">' + st.icon + '</span><span class="qt"><b>Story: ' + esc(script === 't' ? st.title.t : st.title.s) + '</b><small>' + esc(st.en) + (d.best ? ' · Best: ' + '⭐'.repeat(d.best) : ' · read it, then answer 4 questions') + '</small></span><span class="qa">›</span></button>';
+    }).join('');
+  }
+
   /* ---------- LESSON ---------- */
   function renderLesson(L) {
     var b = badge(L);
@@ -299,7 +309,8 @@
       '<div class="modebar"><div class="seg" role="group" aria-label="Mode">' +
       '<button data-mode="write" class="' + (mode === 'write' ? 'on' : '') + '">✏️ Write</button>' +
       '<button data-mode="read" class="' + (mode === 'read' ? 'on' : '') + '">👀 Read</button></div></div>' +
-      '<button class="quiz-btn" data-go="#/q/' + L.id + '"><span class="qi">🎯</span><span class="qt"><b>Mini Quiz</b><small>' + (b.quiz ? 'Best: ' + stars : '8 quick questions — you can do it!') + '</small></span><span class="qa">›</span></button>' +
+      '<button class="quiz-btn" data-go="#/q/' + L.id + '"><span class="qi">🎯</span><span class="qt"><b>Mini Quiz</b><small>' + ('Quiz ' + QV[qnext[L.id] || 0].id + ' · ' + QV[qnext[L.id] || 0].name + (b.quiz ? ' · Best: ' + stars : ' · 8 quick questions')) + '</small></span><span class="qa">›</span></button>' +
+      storyButtons(L) +
       '<div class="section-title">Characters</div><div class="grid chars">' + L.characters.map(function (c, i) { return tile(c, i); }).join('') + '</div>' +
       '<div class="section-title">Words</div><div class="grid words">' + L.words.map(function (w, i) { return tile(w, nc + i); }).join('') + '</div>' +
       '</div>';
@@ -507,13 +518,31 @@
 
   /* ---------- MINI QUIZ ---------- */
   var Q = null;
-  function buildQuiz(L) {
+  var QV = [{ id: 'A', name: 'Classic' }, { id: 'B', name: 'Meanings' }, { id: 'C', name: 'Challenge' }];
+  var qnext = store.get('qnext', {});          // { l1: 0|1|2 }  the version she gets next
+  function buildQuiz(L, ver) {
     var chars = shuffle(L.characters.slice()), words = shuffle(L.words.slice());
     var ci = 0, wi = 0;
     function nextChar() { return chars[ci++ % chars.length]; }
     function nextWord() { return words.length ? words[wi++ % words.length] : nextChar(); }
-    var wq = nextWord();
-    var pattern = [
+    function snd(it) { return clipFor(it) ? 'listen' : 'pick'; }
+    var wq = nextWord(), c1;
+    if (ver === 1) {           // B: meanings first, characters and words
+      return [
+        { t: 'mean', it: nextChar(), py: true }, { t: 'pick', it: nextChar() }, { t: 'write', it: nextChar() },
+        { t: 'mean', it: wq, py: true }, { t: 'py', it: nextChar() }, { t: 'write', it: nextChar() },
+        { t: 'mean', it: nextChar(), py: true }, { t: 'write', it: nextChar() }
+      ];
+    }
+    if (ver === 2) {           // C: challenge: sounds, words, no pinyin help on meanings
+      c1 = nextChar();
+      return [
+        { t: snd(wq), it: wq }, { t: 'mean', it: nextWord() }, { t: 'pick', it: nextChar() },
+        { t: 'py', it: nextChar() }, { t: 'write', it: nextChar() }, { t: snd(c1), it: c1 },
+        { t: 'mean', it: nextChar() }, { t: 'write', it: nextChar() }
+      ];
+    }
+    var pattern = [          // A: the original
       { t: 'py', it: nextChar() }, { t: 'py', it: nextChar() }, { t: 'write', it: nextChar() },
       { t: 'pick', it: nextChar() }, { t: 'py', it: nextChar() }, { t: 'write', it: nextChar() },
       { t: clipFor(wq) ? 'listen' : 'pick', it: wq }, { t: 'write', it: nextChar() }
@@ -522,8 +551,9 @@
   }
   function uniqueBy(list, fn) { var seen = {}; return list.filter(function (x) { var k = fn(x); if (seen[k]) return false; seen[k] = 1; return true; }); }
 
-  function renderQuiz(L) {
-    Q = { L: L, qs: buildQuiz(L), i: 0, res: [], writer: null, size: 0, miss: 0, assist: false, locked: false };
+  function renderQuiz(L, ver) {
+    if (ver == null || isNaN(ver) || ver < 0 || ver > 2) ver = qnext[L.id] || 0;
+    Q = { L: L, ver: ver, qs: buildQuiz(L, ver), i: 0, res: [], writer: null, size: 0, miss: 0, assist: false, locked: false };
     drawQuestion();
   }
   function dotsHTML() {
@@ -563,6 +593,15 @@
       }
       body = '<div class="choices">' + options.map(function (o) {
         return '<button class="choice glc" data-ok="' + (o.s === it.s ? 1 : 0) + '">' + row(textOf(o)) + '</button>';
+      }).join('') + '</div>';
+    } else if (q.t === 'mean') {
+      var mpool = it.kind === 'w' ? L.words : L.characters;
+      var mw = uniqueBy(shuffle(mpool.filter(function (x) { return x.s !== it.s && !clash(x, it); })), function (x) { return plainEn(x.en).toLowerCase(); }).slice(0, 3);
+      var mopts = shuffle([it].concat(mw));
+      label = 'What does it mean?';
+      info = '<div class="qbig">' + row(textOf(it)) + '</div>' + (q.py ? '<div class="pyrow">' + pinyinHTML(it.py, it.alt) + '</div>' : '') + '<div class="gtry">Pick the English meaning</div>';
+      body = '<div class="choices">' + mopts.map(function (o) {
+        return '<button class="choice enc" data-ok="' + (o.s === it.s ? 1 : 0) + '">' + esc(plainEn(o.en)) + '</button>';
       }).join('') + '</div>';
     } else {
       label = 'Write it from memory!';
@@ -652,19 +691,22 @@
   function endQuiz() {
     var L = Q.L, first = Q.res.filter(function (r) { return r === 'first'; }).length;
     var stars = first >= 7 ? 3 : first >= 5 ? 2 : 1;
-    var b = badge(L), isNew = !b.quiz;
+    var b = badge(L), isNew = !b.quiz, ver = Q.ver;
     if (!b.quiz || stars > b.quiz) b.quiz = stars;
+    b.qv = b.qv || {}; if (!b.qv[ver] || stars > b.qv[ver]) b.qv[ver] = stars;
+    qnext[L.id] = (ver + 1) % 3; store.set('qnext', qnext);
     store.set('badges', badges);
     earn(3 + stars * 2 + (isNew ? 5 : 0));
     var msg = stars === 3 ? 'Amazing! You got ' + first + ' of 8 on the first try!' :
               stars === 2 ? 'Great work! ' + first + ' of 8 on the first try.' :
               'You finished the quiz! Every try makes you stronger.';
+    msg += ' Quiz ' + QV[ver].id + ' (' + QV[ver].name + ') done. Next time: Quiz ' + QV[(ver + 1) % 3].id + '!';
     Q = null;
     showWin({
       emoji: stars === 3 ? '🏆' : '🎉', title: 'Well done!', accent: acc(L), stars: stars,
       lines: [msg],
       sticker: isNew ? { emoji: '🏆', label: 'New badge: Quiz Champion!' } : null,
-      primary: { label: 'Play again', fn: function () { go('#/q/' + L.id); } },
+      primary: { label: 'Play Quiz ' + QV[(ver + 1) % 3].id, fn: function () { go('#/q/' + L.id); } },
       secondary: { label: 'Back to lesson', fn: function () { go('#/l/' + L.id); } }
     });
   }
@@ -719,7 +761,7 @@
     if (p[0] === 'l' && L) return renderLesson(L);
     if (p[0] === 'w' && L && L.items[i]) return renderPractice(L, i);
     if (p[0] === 'r' && L && L.items[i]) return renderRead(L, i);
-    if (p[0] === 'q' && L) return renderQuiz(L);
+    if (p[0] === 'q' && L) return renderQuiz(L, isNaN(i) ? null : i);
     if (p[0] === 'about') return renderAbout();
     if (routes[p[0]]) return routes[p[0]](p.slice(1));
     renderHome();

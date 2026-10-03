@@ -86,7 +86,13 @@ window.CONTENT = {
         { s: '歌', t: '歌', py: 'ge1', en: 'song' },
         { s: '画', t: '畫', py: 'hua4', en: 'to draw' },
         { s: '喜', t: '喜', py: 'xi3', en: 'to like' },
-        { s: '欢', t: '歡', py: 'huan1', en: 'joyful (喜欢 = to like)' }
+        { s: '欢', t: '歡', py: 'huan1', en: 'joyful (喜欢 = to like)' },
+        { s: '跑', t: '跑', py: 'pao3', en: 'to run' },
+        { s: '跳', t: '跳', py: 'tiao4', en: 'to jump' },
+        { s: '笑', t: '笑', py: 'xiao4', en: 'to laugh, to smile' },
+        { s: '以', t: '以', py: 'yi3', en: 'by means of (以后 = later)' },
+        { s: '本', t: '本', py: 'ben3', en: 'root, origin (本领 = skill)' },
+        { s: '领', t: '領', py: 'ling3', en: 'to lead (本领 = skill)' }
       ],
       words: [
         { s: '在家', t: '在家', py: 'zai4 jia1', en: 'at home' },
@@ -97,7 +103,50 @@ window.CONTENT = {
         { s: '写字', t: '寫字', py: 'xie3 zi4', en: 'to write characters' },
         { s: '画画儿', t: '畫畫兒', py: 'hua4 huar4', en: 'to draw pictures' },
         { s: '儿歌', t: '兒歌', py: 'er2 ge1', en: 'nursery rhyme' },
-        { s: '喜欢', t: '喜歡', py: 'xi3 huan5', en: 'to like' }
+        { s: '喜欢', t: '喜歡', py: 'xi3 huan5', en: 'to like' },
+        { s: '长大', t: '長大', py: 'zhang3 da4', en: 'to grow up' },
+        { s: '以后', t: '以後', py: 'yi3 hou4', en: 'later, after' },
+        { s: '本领', t: '本領', py: 'ben3 ling3', en: 'skill, ability' }
+      ]
+    },
+    {
+      id: 'l2',
+      number: 2,
+      sticker: '✏️',
+      accent: '#f2b632',
+      accentElena: '#8a6fe0',
+      title: { s: '教室里', t: '教室裡' },
+      py: 'jiao4 shi4 li3',
+      en: 'In the Classroom',
+      note: 'Add 吗 at the end of a sentence to ask a yes/no question: 这是你的书吗？ = Is this your book? Say 不是 to answer "no".',
+      characters: [
+        { s: '教', t: '教', py: 'jiao4', en: 'teaching (教室 = classroom)' },
+        { s: '室', t: '室', py: 'shi4', en: 'room' },
+        { s: '里', t: '裡', py: 'li3', en: 'inside' },
+        { s: '书', t: '書', py: 'shu1', en: 'book' },
+        { s: '吗', t: '嗎', py: 'ma5', en: 'question word (ends a yes/no question)' },
+        { s: '不', t: '不', py: 'bu4', en: 'not' },
+        { s: '那', t: '那', py: 'na4', en: 'that' },
+        { s: '她', t: '她', py: 'ta1', en: 'she, her' },
+        { s: '笔', t: '筆', py: 'bi3', en: 'pen, pencil' },
+        { s: '本', t: '本', py: 'ben3', en: 'for books (本子 = notebook)' },
+        { s: '子', t: '子', py: 'zi3', en: 'small thing (本子 = notebook)' },
+        { s: '讲', t: '講', py: 'jiang3', en: 'to speak' },
+        { s: '请', t: '請', py: 'qing3', en: 'please' },
+        { s: '叫', t: '叫', py: 'jiao4', en: 'to call, to be called' },
+        { s: '都', t: '都', py: 'dou1', en: 'all, both' },
+        { s: '还', t: '還', py: 'hai2', en: 'also, still' },
+        { s: '心', t: '心', py: 'xin1', en: 'heart (放心 = don\'t worry)' }
+      ],
+      words: [
+        { s: '教室', t: '教室', py: 'jiao4 shi4', en: 'classroom' },
+        { s: '本子', t: '本子', py: 'ben3 zi5', en: 'notebook' },
+        { s: '亲爱', t: '親愛', py: 'qin1 ai4', en: 'dear' },
+        { s: '已经', t: '已經', py: 'yi3 jing1', en: 'already' },
+        { s: '一定', t: '一定', py: 'yi2 ding4', en: 'for sure, must' },
+        { s: '知道', t: '知道', py: 'zhi1 dao5', en: 'to know' },
+        { s: '英文', t: '英文', py: 'ying1 wen2', en: 'English (language)' },
+        { s: '放心', t: '放心', py: 'fang4 xin1', en: 'don\'t worry' }
       ]
     },
     {
@@ -122,7 +171,12 @@ window.CONTENT = {
         { s: '问', t: '問', py: 'wen4', en: 'to ask' },
         { s: '谁', t: '誰', py: 'shei2', alt: 'shui2', en: 'who' },
         { s: '听', t: '聽', py: 'ting1', en: 'to listen' },
-        { s: '心', t: '心', py: 'xin1', en: 'heart (放心 = don\'t worry)' }
+        { s: '心', t: '心', py: 'xin1', en: 'heart (放心 = don\'t worry)' },
+        { s: '拿', t: '拿', py: 'na2', en: 'to take, to hold' },
+        { s: '先', t: '先', py: 'xian1', en: 'first' },
+        { s: '鸡', t: '雞', py: 'ji1', en: 'chicken' },
+        { s: '再', t: '再', py: 'zai4', en: 'again, then' },
+        { s: '话', t: '話', py: 'hua4', en: 'words, speech' }
       ],
       words: [
         { s: '放学', t: '放學', py: 'fang4 xue2', en: 'class is over' },
@@ -133,7 +187,12 @@ window.CONTENT = {
         { s: '上午', t: '上午', py: 'shang4 wu3', en: 'morning' },
         { s: '中午', t: '中午', py: 'zhong1 wu3', en: 'noon' },
         { s: '下午', t: '下午', py: 'xia4 wu3', en: 'afternoon' },
-        { s: '朋友', t: '朋友', py: 'peng2 you5', en: 'friend' }
+        { s: '朋友', t: '朋友', py: 'peng2 you5', en: 'friend' },
+        { s: '星期', t: '星期', py: 'xing1 qi1', en: 'week' },
+        { s: '开心', t: '開心', py: 'kai1 xin1', en: 'happy' },
+        { s: '每天', t: '每天', py: 'mei3 tian1', en: 'every day' },
+        { s: '听话', t: '聽話', py: 'ting1 hua4', en: 'to obey, to listen well' },
+        { s: '画家', t: '畫家', py: 'hua4 jia1', en: 'artist, painter' }
       ]
     }
   ],
@@ -188,7 +247,11 @@ window.CONTENT = {
     { s: '妈妈的手机', t: '媽媽的手機', py: 'ma1 ma5 de5 shou3 ji1', en: 'Mom\'s phone', b: [[0, 2], [2, 1]] },
     { s: '爸爸的电脑', t: '爸爸的電腦', py: 'ba4 ba5 de5 dian4 nao3', en: 'Dad\'s computer', b: [[0, 2], [3, 2]] },
     { s: '奶奶的猫', t: '奶奶的貓', py: 'nai3 nai5 de5 mao1', en: 'Grandma\'s cat', b: [[3, 1]] },
-    { s: '爷爷的狗', t: '爺爺的狗', py: 'ye2 ye5 de5 gou3', en: 'Grandpa\'s dog', b: [[0, 2], [3, 1]] }
+    { s: '爷爷的狗', t: '爺爺的狗', py: 'ye2 ye5 de5 gou3', en: 'Grandpa\'s dog', b: [[0, 2], [3, 1]] },
+    { s: '这是你的书吗', t: '這是你的書嗎', py: 'zhe4 shi4 ni3 de5 shu1 ma5', en: 'Is this your book?', b: [[4, 1], [5, 1]] },
+    { s: '那是她的笔', t: '那是她的筆', py: 'na4 shi4 ta1 de5 bi3', en: 'That is her pen.', b: [[0, 1], [4, 1]] },
+    { s: '我在家里讲中文', t: '我在家裡講中文', py: 'wo3 zai4 jia1 li3 jiang3 zhong1 wen2', en: 'I speak Chinese at home.', b: [[3, 2], [5, 2]] },
+    { s: '我的老师在教室里', t: '我的老師在教室裡', py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.', b: [[5, 2], [7, 1]] }
   ],
 
   /* PICTURE WORDS: a picture + English, she writes the word. */
@@ -205,8 +268,801 @@ window.CONTENT = {
     { s: '狗', t: '狗', py: 'gou3', en: 'dog', e: '🐶' },
     { s: '手', t: '手', py: 'shou3', en: 'hand', e: '✋' },
     { s: '手机', t: '手機', py: 'shou3 ji1', en: 'cell phone', e: '📱' },
-    { s: '电脑', t: '電腦', py: 'dian4 nao3', en: 'computer', e: '💻' }
+    { s: '电脑', t: '電腦', py: 'dian4 nao3', en: 'computer', e: '💻' },
+    { s: '书', t: '書', py: 'shu1', en: 'book', e: '📖' },
+    { s: '笔', t: '筆', py: 'bi3', en: 'pen', e: '🖊️' },
+    { s: '本子', t: '本子', py: 'ben3 zi5', en: 'notebook', e: '📓' },
+    { s: '教室', t: '教室', py: 'jiao4 shi4', en: 'classroom', e: '🏫' }
   ],
+
+  /* STORIES: readings from her textbook, each with 3 sets of 4 English multiple-choice questions (o[0] is always the correct answer in the data; the app shuffles). The app hands out the sets in rotation. */
+  stories: [
+  {
+    "id": "s1",
+    "lesson": "l1",
+    "icon": "🏫",
+    "en": "I study at a Chinese school",
+    "title": {
+      "s": "我在中文学校学习",
+      "t": "我在中文學校學習",
+      "py": "wǒ zài zhōng wén xué xiào xué xí"
+    },
+    "lines": [
+      {
+        "s": "我在中文学校学习。",
+        "t": "我在中文學校學習。",
+        "py": "wǒ zài zhōng wén xué xiào xué xí."
+      },
+      {
+        "s": "老师教我们说汉语，写汉字，读儿歌，画画儿。",
+        "t": "老師教我們說漢語，寫漢字，讀兒歌，畫畫兒。",
+        "py": "lǎo shī jiāo wǒ men shuō hàn yǔ, xiě hàn zì, dú ér gē, huà huàr."
+      },
+      {
+        "s": "我喜欢学中文。",
+        "t": "我喜歡學中文。",
+        "py": "wǒ xǐ huan xué zhōng wén."
+      }
+    ],
+    "sets": [
+      [
+        {
+          "q": "Where does the writer study?",
+          "o": [
+            "At a Chinese school",
+            "At home",
+            "In the garden"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which of these does the teacher NOT teach in the story?",
+          "o": [
+            "Playing soccer",
+            "Writing characters",
+            "Reading nursery rhymes"
+          ],
+          "a": 0
+        },
+        {
+          "q": "How does the writer feel about learning Chinese?",
+          "o": [
+            "Likes it",
+            "Is afraid of it",
+            "Thinks it is boring"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which sentence tells you the writer is happy about Chinese?",
+          "o": [
+            "我喜欢学中文。",
+            "我在中文学校学习。",
+            "老师教我们写汉字。"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Who teaches the writer?",
+          "o": [
+            "The teacher",
+            "Mom",
+            "A classmate"
+          ],
+          "a": 0
+        },
+        {
+          "q": "The teacher teaches speaking, writing and reading. What do you think 画画儿 means?",
+          "o": [
+            "To draw pictures",
+            "To sing songs",
+            "To run outside"
+          ],
+          "a": 0
+        },
+        {
+          "q": "How many things does the teacher teach in the list (说, 写, 读, 画)?",
+          "o": [
+            "Four",
+            "Two",
+            "Six"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which sentence is true?",
+          "o": [
+            "The writer studies Chinese at school.",
+            "The writer studies Chinese at the park.",
+            "The writer does not like Chinese."
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "What is the story mostly about?",
+          "o": [
+            "A child who enjoys learning Chinese at school",
+            "A child who is lost",
+            "A child who is sick at home"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What do the students write?",
+          "o": [
+            "Chinese characters",
+            "Letters to Mom",
+            "Songs"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What do the students do with 儿歌 (nursery rhymes)?",
+          "o": [
+            "They read them",
+            "They draw them",
+            "They eat them"
+          ],
+          "a": 0
+        },
+        {
+          "q": "If someone asked the writer, \"Do you like Chinese class?\", what would the writer most likely say?",
+          "o": [
+            "Yes, I like it!",
+            "No, I hate it.",
+            "I don't know what Chinese is."
+          ],
+          "a": 0
+        }
+      ]
+    ]
+  },
+  {
+    "id": "s2",
+    "lesson": "l1",
+    "icon": "🎵",
+    "en": "What a Great Chinese School (poem)",
+    "title": {
+      "s": "中文学校真是好",
+      "t": "中文學校真是好",
+      "py": "zhōng wén xué xiào zhēn shì hǎo"
+    },
+    "lines": [
+      {
+        "s": "中文学校真是好，",
+        "t": "中文學校真是好，",
+        "py": "zhōng wén xué xiào zhēn shì hǎo,"
+      },
+      {
+        "s": "小朋友们可不少。",
+        "t": "小朋友們可不少。",
+        "py": "xiǎo péng you men kě bù shǎo."
+      },
+      {
+        "s": "一起跑来一起跳，",
+        "t": "一起跑來一起跳，",
+        "py": "yì qǐ pǎo lái yì qǐ tiào,"
+      },
+      {
+        "s": "一起唱来一起笑。",
+        "t": "一起唱來一起笑。",
+        "py": "yì qǐ chàng lái yì qǐ xiào."
+      },
+      {
+        "s": "又学写字又画画儿，",
+        "t": "又學寫字又畫畫兒，",
+        "py": "yòu xué xiě zì yòu huà huàr,"
+      },
+      {
+        "s": "长大以后本领高。",
+        "t": "長大以後本領高。",
+        "py": "zhǎng dà yǐ hòu běn lǐng gāo."
+      }
+    ],
+    "sets": [
+      [
+        {
+          "q": "What does the poem say about the Chinese school?",
+          "o": [
+            "It is really good",
+            "It is far away",
+            "It is too hard"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which of these is NOT in the poem?",
+          "o": [
+            "Swimming",
+            "Running",
+            "Jumping"
+          ],
+          "a": 0
+        },
+        {
+          "q": "The poem says 小朋友们可不少. What does that tell you?",
+          "o": [
+            "There are many children",
+            "There are very few children",
+            "The children are asleep"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What will happen after the children grow up?",
+          "o": [
+            "They will have great skills",
+            "They will forget everything",
+            "They will stop learning"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Who is the poem about?",
+          "o": [
+            "Children",
+            "Teachers only",
+            "Animals"
+          ],
+          "a": 0
+        },
+        {
+          "q": "In 一起跑来一起跳, what does 一起 mean?",
+          "o": [
+            "Together",
+            "Alone",
+            "Slowly"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which two things do the children learn to do?",
+          "o": [
+            "Write characters and draw",
+            "Cook and swim",
+            "Sleep and sit"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Why does the poem say their skills will be high when they grow up?",
+          "o": [
+            "Because they learn many things now",
+            "Because they sleep a lot",
+            "Because they are tall"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Which word in the poem means \"to laugh\"?",
+          "o": [
+            "笑",
+            "跳",
+            "唱"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which word in the poem means \"to jump\"?",
+          "o": [
+            "跳",
+            "跑",
+            "笑"
+          ],
+          "a": 0
+        },
+        {
+          "q": "How does the writer feel about the school?",
+          "o": [
+            "Happy and proud",
+            "Sad",
+            "Angry"
+          ],
+          "a": 0
+        },
+        {
+          "q": "The poem lists: run, jump, sing, laugh. What comes right after \"jump\"?",
+          "o": [
+            "Sing",
+            "Run",
+            "Laugh"
+          ],
+          "a": 0
+        }
+      ]
+    ]
+  },
+  {
+    "id": "s3",
+    "lesson": "l2",
+    "icon": "💌",
+    "en": "I Have Grown Up (a letter)",
+    "title": {
+      "s": "我长大了",
+      "t": "我長大了",
+      "py": "wǒ zhǎng dà le"
+    },
+    "lines": [
+      {
+        "s": "亲爱的爸爸、妈妈：",
+        "t": "親愛的爸爸、媽媽：",
+        "py": "qīn ài de bà ba, mā ma:"
+      },
+      {
+        "s": "请不要叫我小娃娃，我已经上学了。",
+        "t": "請不要叫我小娃娃，我已經上學了。",
+        "py": "qǐng bú yào jiào wǒ xiǎo wá wa, wǒ yǐ jīng shàng xué le."
+      },
+      {
+        "s": "以前，书呀、笔呀和本子我都乱丢，",
+        "t": "以前，書呀、筆呀和本子我都亂丟，",
+        "py": "yǐ qián, shū ya, bǐ ya hé běn zi wǒ dōu luàn diū,"
+      },
+      {
+        "s": "现在我一定要好好爱护它们。",
+        "t": "現在我一定要好好愛護它們。",
+        "py": "xiàn zài wǒ yí dìng yào hǎo hǎo ài hù tā men."
+      },
+      {
+        "s": "以前，我只知道要学好英文，",
+        "t": "以前，我只知道要學好英文，",
+        "py": "yǐ qián, wǒ zhǐ zhī dào yào xué hǎo yīng wén,"
+      },
+      {
+        "s": "现在，我知道还要学好中文。",
+        "t": "現在，我知道還要學好中文。",
+        "py": "xiàn zài, wǒ zhī dào hái yào xué hǎo zhōng wén."
+      },
+      {
+        "s": "我真的已经长大了，",
+        "t": "我真的已經長大了，",
+        "py": "wǒ zhēn de yǐ jīng zhǎng dà le,"
+      },
+      {
+        "s": "请你们放心吧！",
+        "t": "請你們放心吧！",
+        "py": "qǐng nǐ men fàng xīn ba!"
+      },
+      {
+        "s": "你们的儿子 明明",
+        "t": "你們的兒子 明明",
+        "py": "nǐ men de ér zi míng ming"
+      }
+    ],
+    "sets": [
+      [
+        {
+          "q": "Who wrote this letter?",
+          "o": [
+            "Mingming, a boy",
+            "The teacher",
+            "Mom"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Who is the letter to?",
+          "o": [
+            "His parents",
+            "His teacher",
+            "His friend"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does Mingming ask his parents to stop doing?",
+          "o": [
+            "Calling him a little baby",
+            "Making him do homework",
+            "Driving him to school"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does Mingming promise about his books, pens and notebooks?",
+          "o": [
+            "To take good care of them",
+            "To give them away",
+            "To hide them"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "How do you know Mingming is already in school?",
+          "o": [
+            "He says 我已经上学了",
+            "He says he is a baby",
+            "He says he has no books"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What did Mingming do with his things BEFORE?",
+          "o": [
+            "He was careless with them",
+            "He kept them very neat",
+            "He sold them"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Before, Mingming only knew he had to learn ___ well. Now he knows he must learn ___ too.",
+          "o": [
+            "English; Chinese",
+            "Chinese; English",
+            "Math; art"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which line shows Mingming wants his parents not to worry?",
+          "o": [
+            "请你们放心吧！",
+            "亲爱的爸爸、妈妈",
+            "你们的儿子 明明"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Why does Mingming say 我真的已经长大了?",
+          "o": [
+            "He will take care of his things and learn Chinese too",
+            "He is taller than his dad",
+            "He is old enough to drive"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does 亲爱的 at the start of the letter tell you?",
+          "o": [
+            "It is a warm way to say \"Dear\"",
+            "It is a question",
+            "It is an angry word"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What changed between 以前 (before) and 现在 (now)?",
+          "o": [
+            "Mingming became more responsible",
+            "Mingming moved to a new house",
+            "Mingming lost his parents"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Who signs the letter at the end?",
+          "o": [
+            "Their son, Mingming",
+            "The teacher",
+            "Their daughter"
+          ],
+          "a": 0
+        }
+      ]
+    ]
+  },
+  {
+    "id": "s4",
+    "lesson": "l3",
+    "icon": "🚗",
+    "en": "Class Is Over",
+    "title": {
+      "s": "放学了",
+      "t": "放學了",
+      "py": "fàng xué le"
+    },
+    "lines": [
+      {
+        "s": "今天星期五，放学了，爸爸在车上告诉我：",
+        "t": "今天星期五，放學了，爸爸在車上告訴我：",
+        "py": "jīn tiān xīng qī wǔ, fàng xué le, bà ba zài chē shang gào su wǒ:"
+      },
+      {
+        "s": "“下午有一个小朋友来我们家。”",
+        "t": "“下午有一個小朋友來我們家。”",
+        "py": "“xià wǔ yǒu yí ge xiǎo péng you lái wǒ men jiā.”"
+      },
+      {
+        "s": "我问：“他是谁？”爸爸说：“是云云。”",
+        "t": "我問：“他是誰？”爸爸說：“是雲雲。”",
+        "py": "wǒ wèn: “tā shì shuí?” bà ba shuō: “shì yún yun.”"
+      },
+      {
+        "s": "云云是我的好朋友，我听了，真开心。",
+        "t": "雲雲是我的好朋友，我聽了，真開心。",
+        "py": "yún yun shì wǒ de hǎo péng you, wǒ tīng le, zhēn kāi xīn."
+      }
+    ],
+    "sets": [
+      [
+        {
+          "q": "What day is it?",
+          "o": [
+            "Friday",
+            "Monday",
+            "Sunday"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Where is Dad when he tells the news?",
+          "o": [
+            "In the car",
+            "At school",
+            "In the garden"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Who is coming to the house?",
+          "o": [
+            "Yunyun, a good friend",
+            "The teacher",
+            "Grandma"
+          ],
+          "a": 0
+        },
+        {
+          "q": "How does the child feel at the end?",
+          "o": [
+            "Happy",
+            "Sad",
+            "Sleepy"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "When is the friend coming?",
+          "o": [
+            "This afternoon",
+            "Tomorrow morning",
+            "Next week"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does the child ask Dad?",
+          "o": [
+            "Who is it?",
+            "Where is the car?",
+            "What day is it?"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does 放学了 mean?",
+          "o": [
+            "School is over",
+            "School is starting",
+            "Time to sleep"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Why is the child happy?",
+          "o": [
+            "Because the visitor is a good friend",
+            "Because there is no school tomorrow",
+            "Because Dad bought a car"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Who picks the child up after school?",
+          "o": [
+            "Dad",
+            "Mom",
+            "The teacher"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which word in the story means \"afternoon\"?",
+          "o": [
+            "下午",
+            "今天",
+            "星期"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What will the two friends probably do this afternoon?",
+          "o": [
+            "Play together at home",
+            "Go to the dentist",
+            "Take a test"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Which sentence shows how the child feels?",
+          "o": [
+            "真开心。",
+            "他是谁？",
+            "是云云。"
+          ],
+          "a": 0
+        }
+      ]
+    ]
+  },
+  {
+    "id": "s5",
+    "lesson": "l3",
+    "icon": "🎨",
+    "en": "Yunyun Is Drawing Pictures",
+    "title": {
+      "s": "云云画画儿",
+      "t": "雲雲畫畫兒",
+      "py": "yún yun huà huàr"
+    },
+    "lines": [
+      {
+        "s": "云云喜欢画画儿。",
+        "t": "雲雲喜歡畫畫兒。",
+        "py": "yún yun xǐ huan huà huàr."
+      },
+      {
+        "s": "每天放学回到家，她就拿起笔来学画画儿。",
+        "t": "每天放學回到家，她就拿起筆來學畫畫兒。",
+        "py": "měi tiān fàng xué huí dào jiā, tā jiù ná qǐ bǐ lái xué huà huàr."
+      },
+      {
+        "s": "她先画一只鸡，再画一只鸭，",
+        "t": "她先畫一隻雞，再畫一隻鴨，",
+        "py": "tā xiān huà yì zhī jī, zài huà yì zhī yā,"
+      },
+      {
+        "s": "还画了牛、马和几朵花儿。",
+        "t": "還畫了牛、馬和幾朵花兒。",
+        "py": "hái huà le niú, mǎ hé jǐ duǒ huār."
+      },
+      {
+        "s": "小小画笔真听她的话，",
+        "t": "小小畫筆真聽她的話，",
+        "py": "xiǎo xiǎo huà bǐ zhēn tīng tā de huà,"
+      },
+      {
+        "s": "云云是个小画家。",
+        "t": "雲雲是個小畫家。",
+        "py": "yún yun shì ge xiǎo huà jiā."
+      }
+    ],
+    "sets": [
+      [
+        {
+          "q": "What does Yunyun like to do?",
+          "o": [
+            "Draw pictures",
+            "Play soccer",
+            "Sing songs"
+          ],
+          "a": 0
+        },
+        {
+          "q": "When does Yunyun draw?",
+          "o": [
+            "Every day after school, at home",
+            "Only on weekends",
+            "Only at school"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does Yunyun draw first?",
+          "o": [
+            "A chicken",
+            "A flower",
+            "A car"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What is Yunyun called at the end of the story?",
+          "o": [
+            "A little artist",
+            "A little teacher",
+            "A little singer"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "Which word tells you she draws every day?",
+          "o": [
+            "每天",
+            "星期",
+            "今天"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does 先…再… (first… then…) tell you about the drawings?",
+          "o": [
+            "The order she draws them in",
+            "How big they are",
+            "How much they cost"
+          ],
+          "a": 0
+        },
+        {
+          "q": "The story says her brush \"listens\" to her. What does that mean?",
+          "o": [
+            "It draws just the way she wants",
+            "It talks to her",
+            "It is broken"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does Yunyun do when she gets home?",
+          "o": [
+            "She picks up a pen and practices drawing",
+            "She goes to sleep",
+            "She watches TV"
+          ],
+          "a": 0
+        }
+      ],
+      [
+        {
+          "q": "What kind of person is Yunyun?",
+          "o": [
+            "Someone who loves art and practices a lot",
+            "Someone who dislikes school",
+            "Someone who is always sleepy"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What is the main idea of the story?",
+          "o": [
+            "Yunyun draws every day and gets good at it",
+            "Yunyun loses her pen",
+            "Yunyun is moving away"
+          ],
+          "a": 0
+        },
+        {
+          "q": "What does 画家 mean?",
+          "o": [
+            "Artist",
+            "Teacher",
+            "Doctor"
+          ],
+          "a": 0
+        },
+        {
+          "q": "Why do you think the story says the brush \"listens\" to her?",
+          "o": [
+            "Because she draws well",
+            "Because the brush is loud",
+            "Because she is angry"
+          ],
+          "a": 0
+        }
+      ]
+    ]
+  }
+],
 
   /* SENTENCE BUILDER: sentences from her book's "read aloud" pages, cut into chunks she puts back in order.
      chunks = simplified pieces, tchunks = the same pieces in traditional. py = numeric pinyin for the whole sentence. */
@@ -227,6 +1083,9 @@ window.CONTENT = {
     { chunks: ['我们', '不是', '猫'], tchunks: ['我們', '不是', '貓'], py: 'wo3 men5 bu2 shi4 mao1', en: 'We are not cats.' },
     { chunks: ['奶奶', '是', '妈妈的', '妈妈'], tchunks: ['奶奶', '是', '媽媽的', '媽媽'], py: 'nai3 nai5 shi4 ma1 ma5 de5 ma1 ma5', en: 'Grandma is mom\'s mom.' },
     { chunks: ['我的', '爸爸', '不是', '爷爷'], tchunks: ['我的', '爸爸', '不是', '爺爺'], py: 'wo3 de5 ba4 ba5 bu2 shi4 ye2 ye5', en: 'My dad is not grandpa.' },
-    { chunks: ['今天', '星期', '五'], tchunks: ['今天', '星期', '五'], py: 'jin1 tian1 xing1 qi1 wu3', en: 'Today is Friday.' }
+    { chunks: ['今天', '星期', '五'], tchunks: ['今天', '星期', '五'], py: 'jin1 tian1 xing1 qi1 wu3', en: 'Today is Friday.' },
+    { chunks: ['这是', '你的', '书', '吗'], tchunks: ['這是', '你的', '書', '嗎'], py: 'zhe4 shi4 ni3 de5 shu1 ma5', en: 'Is this your book?' },
+    { chunks: ['我', '在家里', '讲', '中文'], tchunks: ['我', '在家裡', '講', '中文'], py: 'wo3 zai4 jia1 li3 jiang3 zhong1 wen2', en: 'I speak Chinese at home.' },
+    { chunks: ['我的', '老师', '在', '教室里'], tchunks: ['我的', '老師', '在', '教室裡'], py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.' }
   ]
 };
