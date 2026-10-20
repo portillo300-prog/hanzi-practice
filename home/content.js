@@ -78,6 +78,7 @@ window.CONTENT = {
       characters: [
         { s: '在', t: '在', py: 'zai4', en: 'at, in' },
         { s: '教', t: '教', py: 'jiao1', en: 'to teach' },
+        { s: '说', t: '說', py: 'shuo1', en: 'to say, to talk (说汉语 = speak Chinese)' },
         { s: '汉', t: '漢', py: 'han4', en: 'Chinese (Han)' },
         { s: '语', t: '語', py: 'yu3', en: 'language' },
         { s: '写', t: '寫', py: 'xie3', en: 'to write' },
@@ -99,6 +100,7 @@ window.CONTENT = {
         { s: '在学校', t: '在學校', py: 'zai4 xue2 xiao4', en: 'at school' },
         { s: '中文', t: '中文', py: 'zhong1 wen2', en: 'Chinese (language)' },
         { s: '汉语', t: '漢語', py: 'han4 yu3', en: 'Chinese language' },
+        { s: '说汉语', t: '說漢語', py: 'shuo1 han4 yu3', en: 'to speak Chinese' },
         { s: '汉字', t: '漢字', py: 'han4 zi4', en: 'Chinese characters' },
         { s: '写字', t: '寫字', py: 'xie3 zi4', en: 'to write characters' },
         { s: '画画儿', t: '畫畫兒', py: 'hua4 huar4', en: 'to draw pictures' },
@@ -194,6 +196,43 @@ window.CONTENT = {
         { s: '听话', t: '聽話', py: 'ting1 hua4', en: 'to obey, to listen well' },
         { s: '画家', t: '畫家', py: 'hua4 jia1', en: 'artist, painter' }
       ]
+    },
+    {
+      id: 'l4',
+      number: 4,
+      sticker: '🙏',
+      accent: '#59b98a',
+      accentElena: '#d96ba0',
+      title: { s: '讲礼貌', t: '講禮貌' },
+      py: 'jiang3 li3 mao4',
+      en: 'Practise Good Manners',
+      note: '<b>没</b> + a verb means "did not" or "does not": 没去 = did not go, 没看 = did not look. <b>对不起</b> and <b>没关系</b> go together: first you say sorry, then the other person says "it\'s OK". <b>您</b> is a very polite way to say 你, for teachers and grown-ups.',
+      characters: [
+        { s: '用', t: '用', py: 'yong4', en: 'to use' },
+        { s: '记', t: '記', py: 'ji4', en: 'to remember, to write down' },
+        { s: '请', t: '請', py: 'qing3', en: 'please' },
+        { s: '谢', t: '謝', py: 'xie4', en: 'to thank' },
+        { s: '对', t: '對', py: 'dui4', en: 'correct (对不起 = sorry)' },
+        { s: '起', t: '起', py: 'qi3', en: 'to rise (对不起 = sorry)' },
+        { s: '没', t: '沒', py: 'mei2', en: 'not have (没关系 = it\'s OK)' },
+        { s: '关', t: '關', py: 'guan1', en: 'to close, to connect' },
+        { s: '系', t: '係', py: 'xi4', en: 'relationship (没关系 = it\'s OK)' },
+        { s: '再', t: '再', py: 'zai4', en: 'again (再见 = goodbye)' },
+        { s: '做', t: '做', py: 'zuo4', en: 'to do, to be (做朋友 = to be friends)' },
+        { s: '孩', t: '孩', py: 'hai2', en: 'child' },
+        { s: '拍', t: '拍', py: 'pai1', en: 'to clap, to pat' },
+        { s: '着', t: '着', py: 'zhe5', en: 'shows an action going on (拉着手 = holding hands)' },
+        { s: '拉', t: '拉', py: 'la1', en: 'to pull (拉手 = to hold hands)' }
+      ],
+      words: [
+        { s: '谢谢', t: '謝謝', py: 'xie4 xie5', en: 'thank you' },
+        { s: '对不起', t: '對不起', py: 'dui4 bu5 qi3', en: 'sorry' },
+        { s: '没关系', t: '沒關係', py: 'mei2 guan1 xi5', en: 'it\'s OK, never mind' },
+        { s: '再见', t: '再見', py: 'zai4 jian4', en: 'goodbye' },
+        { s: '孩子', t: '孩子', py: 'hai2 zi5', en: 'child' },
+        { s: '拍手', t: '拍手', py: 'pai1 shou3', en: 'to clap' },
+        { s: '拉手', t: '拉手', py: 'la1 shou3', en: 'to hold hands' }
+      ]
     }
   ],
 
@@ -251,7 +290,16 @@ window.CONTENT = {
     { s: '这是你的书吗', t: '這是你的書嗎', py: 'zhe4 shi4 ni3 de5 shu1 ma5', en: 'Is this your book?', b: [[4, 1], [5, 1]] },
     { s: '那是她的笔', t: '那是她的筆', py: 'na4 shi4 ta1 de5 bi3', en: 'That is her pen.', b: [[0, 1], [4, 1]] },
     { s: '我在家里讲中文', t: '我在家裡講中文', py: 'wo3 zai4 jia1 li3 jiang3 zhong1 wen2', en: 'I speak Chinese at home.', b: [[3, 2], [5, 2]] },
-    { s: '我的老师在教室里', t: '我的老師在教室裡', py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.', b: [[5, 2], [7, 1]] }
+    { s: '我的老师在教室里', t: '我的老師在教室裡', py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.', b: [[5, 2], [7, 1]] },
+    { s: '谢谢老师', t: '謝謝老師', py: 'xie4 xie5 lao3 shi1', en: 'Thank you, teacher.', b: [[0, 2]] },
+    { s: '对不起', t: '對不起', py: 'dui4 bu5 qi3', en: 'I am sorry.', b: [[0, 1], [2, 1]] },
+    { s: '没关系', t: '沒關係', py: 'mei2 guan1 xi5', en: 'It is OK.', b: [[1, 2]] },
+    { s: '再见老师', t: '再見老師', py: 'zai4 jian4 lao3 shi1', en: 'Goodbye, teacher.', b: [[0, 1]] },
+    { s: '做个好孩子', t: '做個好孩子', py: 'zuo4 ge5 hao3 hai2 zi5', en: 'Be a good child.', b: [[0, 1], [3, 1]] },
+    { s: '我们拍手', t: '我們拍手', py: 'wo3 men5 pai1 shou3', en: 'We clap our hands.', b: [[2, 1]] },
+    { s: '请说中文', t: '請說中文', py: 'qing3 shuo1 zhong1 wen2', en: 'Please speak Chinese.', b: [[0, 1]] },
+    { s: '我没有笔', t: '我沒有筆', py: 'wo3 mei2 you3 bi3', en: 'I do not have a pen.', b: [[1, 1], [3, 1]] },
+    { s: '小朋友拉着手', t: '小朋友拉着手', py: 'xiao3 peng2 you5 la1 zhe5 shou3', en: 'The children are holding hands.', b: [[3, 1], [4, 1]] }
   ],
 
   /* PICTURE WORDS: a picture + English, she writes the word. */
@@ -272,7 +320,13 @@ window.CONTENT = {
     { s: '书', t: '書', py: 'shu1', en: 'book', e: '📖' },
     { s: '笔', t: '筆', py: 'bi3', en: 'pen', e: '🖊️' },
     { s: '本子', t: '本子', py: 'ben3 zi5', en: 'notebook', e: '📓' },
-    { s: '教室', t: '教室', py: 'jiao4 shi4', en: 'classroom', e: '🏫' }
+    { s: '教室', t: '教室', py: 'jiao4 shi4', en: 'classroom', e: '🏫' },
+    { s: '谢谢', t: '謝謝', py: 'xie4 xie5', en: 'thank you', e: '🙏' },
+    { s: '再见', t: '再見', py: 'zai4 jian4', en: 'goodbye', e: '👋' },
+    { s: '拍手', t: '拍手', py: 'pai1 shou3', en: 'to clap', e: '👏' },
+    { s: '拉手', t: '拉手', py: 'la1 shou3', en: 'to hold hands', e: '🤝' },
+    { s: '孩子', t: '孩子', py: 'hai2 zi5', en: 'child', e: '🧒' },
+    { s: '对不起', t: '對不起', py: 'dui4 bu5 qi3', en: 'sorry', e: '🙇' }
   ],
 
   /* STORIES: readings from her textbook, each with 3 sets of 4 English multiple-choice questions (o[0] is always the correct answer in the data; the app shuffles). The app hands out the sets in rotation. */
@@ -1086,6 +1140,11 @@ window.CONTENT = {
     { chunks: ['今天', '星期', '五'], tchunks: ['今天', '星期', '五'], py: 'jin1 tian1 xing1 qi1 wu3', en: 'Today is Friday.' },
     { chunks: ['这是', '你的', '书', '吗'], tchunks: ['這是', '你的', '書', '嗎'], py: 'zhe4 shi4 ni3 de5 shu1 ma5', en: 'Is this your book?' },
     { chunks: ['我', '在家里', '讲', '中文'], tchunks: ['我', '在家裡', '講', '中文'], py: 'wo3 zai4 jia1 li3 jiang3 zhong1 wen2', en: 'I speak Chinese at home.' },
-    { chunks: ['我的', '老师', '在', '教室里'], tchunks: ['我的', '老師', '在', '教室裡'], py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.' }
+    { chunks: ['我的', '老师', '在', '教室里'], tchunks: ['我的', '老師', '在', '教室裡'], py: 'wo3 de5 lao3 shi1 zai4 jiao4 shi4 li3', en: 'My teacher is in the classroom.' },
+    { chunks: ['小朋友', '讲', '礼貌'], tchunks: ['小朋友', '講', '禮貌'], py: 'xiao3 peng2 you5 jiang3 li3 mao4', en: 'Children are polite.' },
+    { chunks: ['我们', '做', '好孩子'], tchunks: ['我們', '做', '好孩子'], py: 'wo3 men5 zuo4 hao3 hai2 zi5', en: 'We are good children.' },
+    { chunks: ['云云', '对', '老师', '说', '谢谢'], tchunks: ['雲雲', '對', '老師', '說', '謝謝'], py: 'yun2 yun2 dui4 lao3 shi1 shuo1 xie4 xie5', en: 'Yunyun says thank you to the teacher.' },
+    { chunks: ['我', '没', '看', '书'], tchunks: ['我', '沒', '看', '書'], py: 'wo3 mei2 kan4 shu1', en: 'I did not read the book.' },
+    { chunks: ['老师', '说', '再见'], tchunks: ['老師', '說', '再見'], py: 'lao3 shi1 shuo1 zai4 jian4', en: 'The teacher says goodbye.' }
   ]
 };

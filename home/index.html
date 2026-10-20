@@ -4,23 +4,25 @@
 <meta charset="utf-8">
 <title>写汉字 Hanzi Practice</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0e1116">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffe6ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="写汉字">
+<script>try{var __t=JSON.parse(localStorage.getItem("hanzi.theme")||"null");if(__t!=="normal")document.documentElement.setAttribute("data-theme","elena");}catch(e){document.documentElement.setAttribute("data-theme","elena");}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
-<script>try{if(JSON.parse(localStorage.getItem("hanzi.theme"))==="elena")document.documentElement.setAttribute("data-theme","elena");}catch(e){}</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="app" aria-live="polite"></div>
 <noscript>This app needs JavaScript.</noscript>
 <script src="vendor/hanzi-writer.min.js"></script>
+<script src="vendor/matter.min.js"></script>
 <script src="content.js"></script>
+<script src="stories-more.js"></script>
 <script src="strokes.js"></script>
 <script src="audio-manifest.js"></script>
 <script src="fx.js"></script>
@@ -29,6 +31,12 @@
 <script src="games2.js"></script>
 <script src="fill.js"></script>
 <script src="stories.js"></script>
+<script src="pet.js"></script>
+<script src="fusion-data.js"></script>
+<script src="fusion.js"></script>
+<script src="suika.js"></script>
+<script src="photos-data.js"></script>
+<script src="photo.js"></script>
 <script src="words.js"></script>
 <script src="app.js"></script>
 </body>

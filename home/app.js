@@ -19,7 +19,7 @@
   var done = store.get('done', {});          // { "l1:在": true }
   var badges = store.get('badges', {});      // { l1: { writer: true, quiz: 3 } }
   var soundOn = store.get('sound', true);
-  var theme = store.get('theme', 'normal');  // 'normal' | 'elena'
+  var theme = store.get('theme', 'elena');   // 'elena' = pastel (default) | 'normal' = dark
   FX.setSound(soundOn);
   function applyTheme() {
     if (theme === 'elena') document.documentElement.setAttribute('data-theme', 'elena');
@@ -65,7 +65,12 @@
     wallet = { bal: start, life: start };
     store.set('wallet', wallet);
   }
-  function updateChips() { Array.prototype.forEach.call(document.querySelectorAll('.wnum'), function (e) { e.textContent = wallet.bal; }); }
+  if (typeof wallet.gold !== 'number') wallet.gold = 0;   // golden stars (readings + quizzes), each worth GOLD_WORTH regular stars
+  var GOLD_WORTH = 25;
+  function updateChips() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wnum'), function (e) { e.textContent = wallet.bal; });
+    Array.prototype.forEach.call(document.querySelectorAll('.gnum'), function (e) { e.textContent = wallet.gold; });
+  }
   function toast(msg) {
     var d = document.createElement('div'); d.className = 'toast'; d.textContent = msg;
     document.body.appendChild(d);
@@ -76,12 +81,32 @@
     wallet.bal += n; wallet.life += n; store.set('wallet', wallet);
     toast('+' + n + ' ⭐'); updateChips();
   }
+  function earnGold(n) {
+    if (!(n > 0)) return;
+    wallet.gold += n; store.set('wallet', wallet);
+    toast('+' + n + ' 🌟'); updateChips();
+  }
+  // swap n super stars for regular stars (the exchange button)
+  function exchangeGold(n) {
+    n = Math.floor(n); if (!(n > 0) || wallet.gold < n) return false;
+    wallet.gold -= n; wallet.bal += n * GOLD_WORTH; store.set('wallet', wallet); updateChips(); return true;
+  }
+  // pay with regular stars first, then golden stars (each worth GOLD_WORTH); change comes back as regular stars
+  function canAfford(n) { return wallet.bal + wallet.gold * GOLD_WORTH >= n; }
+  function spendMixed(n) {
+    if (!canAfford(n)) return false;
+    var fromStars = Math.min(wallet.bal, n), rest = n - fromStars;
+    wallet.bal -= fromStars;
+    if (rest > 0) { var g = Math.ceil(rest / GOLD_WORTH); wallet.gold -= g; wallet.bal += g * GOLD_WORTH - rest; }
+    store.set('wallet', wallet); updateChips();
+    return true;
+  }
   function spend(n) {
     if (wallet.bal < n) return false;
     wallet.bal -= n; store.set('wallet', wallet); updateChips();
     return true;
   }
-  function walletPill() { return '<button class="wallet" data-go="#/garden/shop" aria-label="My stars">⭐ <b class="wnum">' + wallet.bal + '</b></button>'; }
+  function walletPill() { return '<button class="wallet" data-go="#/garden/shop" aria-label="My stars">⭐ <b class="wnum">' + wallet.bal + '</b><span class="wsep">·</span>🌟 <b class="gnum">' + wallet.gold + '</b></button>'; }
 
   /* bottom tab bar (tabs from the games / garden / words modules are added at start-up) */
   var tabs = [{ id: 'home', icon: '✏️', label: 'Practice', href: '#/', order: 10 }];
@@ -136,8 +161,8 @@
   }
   function themeSeg() {
     return '<div class="seg theme" role="group" aria-label="Color style">' +
-      '<button data-theme-btn="normal" class="' + (theme === 'normal' ? 'on' : '') + '">Normal</button>' +
-      '<button data-theme-btn="elena" class="' + (theme === 'elena' ? 'on' : '') + '">🌸 Elena<span class="long"> style</span></button></div>';
+      '<button data-theme-btn="elena" class="' + (theme === 'elena' ? 'on' : '') + '">🌸 Pastel</button>' +
+      '<button data-theme-btn="normal" class="' + (theme === 'normal' ? 'on' : '') + '">🌙 Dark</button></div>';
   }
   function soundBtn() { return '<button class="iconbtn" id="snd" aria-label="Sound on or off">' + (soundOn ? '🔊' : '🔇') + '</button>'; }
   function bindTop(after) {
@@ -236,7 +261,7 @@
     if (L.hidden) return;
     var b = badge(L);
     if (b.writer || doneCount(L) < L.items.length) return;
-    b.writer = true; store.set('badges', badges); earn(10);
+    b.writer = true; store.set('badges', badges); earn(10); earnGold(3);
     later(function () {
       showWin({
         emoji: '🎉', title: 'Lesson complete!', accent: acc(L),
@@ -692,11 +717,14 @@
     var L = Q.L, first = Q.res.filter(function (r) { return r === 'first'; }).length;
     var stars = first >= 7 ? 3 : first >= 5 ? 2 : 1;
     var b = badge(L), isNew = !b.quiz, ver = Q.ver;
+    var prevStars = (b.qv && b.qv[ver]) || 0;
     if (!b.quiz || stars > b.quiz) b.quiz = stars;
     b.qv = b.qv || {}; if (!b.qv[ver] || stars > b.qv[ver]) b.qv[ver] = stars;
     qnext[L.id] = (ver + 1) % 3; store.set('qnext', qnext);
     store.set('badges', badges);
     earn(3 + stars * 2 + (isNew ? 5 : 0));
+    var goldFor = function (n) { return n >= 2 ? n - 1 : 0; };
+    earnGold(Math.max(0, goldFor(stars) - goldFor(prevStars)));   // 2 stars = 1 super star, 3 stars = 2; only for beating your best on that quiz
     var msg = stars === 3 ? 'Amazing! You got ' + first + ' of 8 on the first try!' :
               stars === 2 ? 'Great work! ' + first + ' of 8 on the first try.' :
               'You finished the quiz! Every try makes you stronger.';
@@ -733,6 +761,7 @@
       (speakers || '<p class="muted">Audio is coming soon.</p>') + '</div>' +
       '<div class="acard"><h2>Words</h2><p>Ideas and pinyin for the words in the Word Lab were checked against <a href="https://cc-cedict.org" target="_blank" rel="noopener">CC-CEDICT</a> (Creative Commons Attribution-ShareAlike 4.0). The kid-friendly meanings were written by hand.</p></div>' +
       '<div class="acard"><h2>Stroke order</h2><p>Stroke animations use <a href="https://hanziwriter.org" target="_blank" rel="noopener">Hanzi Writer</a> (MIT License), with character data from <a href="https://github.com/skishore/makemeahanzi" target="_blank" rel="noopener">Make Me a Hanzi</a> and <a href="https://github.com/parsimonhi/animCJK" target="_blank" rel="noopener">AnimCJK</a>, based on the Arphic PL fonts (Arphic Public License).</p></div>' +
+      '<div class="acard"><h2>Games</h2><p>The Family Jar game uses the <a href="https://brm.io/matter-js/" target="_blank" rel="noopener">Matter.js</a> physics engine (MIT License). Hanzi Fusion recipes were checked against the Make Me a Hanzi character data. The photos in Photo Match are free photos from <a href=\"https://www.pexels.com\" target=\"_blank\" rel=\"noopener\">Pexels</a>.</p></div>' +
       '<div class="acard"><h2>Sound check</h2><p>Not hearing the voices or the chimes? Turn the volume up, make sure the device is not on silent, then tap the button.</p><button class="btn primary" id="soundtest">🔊 Play test sound</button><div id="soundout" class="soundout"></div></div>' +
       '<div class="acard"><h2>Sounds &amp; pictures</h2><p>Chimes and cheers are generated by the app itself. Emoji are drawn by your device.</p></div>' +
       '<div class="acard"><h2>Made with ❤️</h2><p>Built for a young learner by a family that loves Chinese. Words and lessons can be updated any time.</p></div>' +
@@ -795,7 +824,7 @@
     $: $, go: go, later: later, shuffle: shuffle, esc: esc, row: row, glyph: glyph,
     pinyinHTML: pinyinHTML, pinyinText: pinyinText, textOf: textOf, keyOf: keyOf, acc: acc, plain: plainEn,
     say: say, hasVoice: hasVoice, showWin: showWin, showPraise: showPraise, hint: hint, soundBtn: soundBtn, scriptToggle: scriptToggle, themeSeg: themeSeg,
-    bindTop: bindTop, earn: earn, spend: spend, walletPill: walletPill, tabbar: tabbar,
+    bindTop: bindTop, earn: earn, spend: spend, earnGold: earnGold, exchangeGold: exchangeGold, spendMixed: spendMixed, canAfford: canAfford, goldWorth: GOLD_WORTH, toast: toast, walletPill: walletPill, tabbar: tabbar,
     wallet: function () { return wallet; },
     cssVar: cssVar, nudgeHTML: nudgeHTML, clash: clash,
     script: function () { return script; },
@@ -803,6 +832,38 @@
     onLeave: function (fn) { leaveFns.push(fn); }
   };
   (window.HANZI_MODS || []).forEach(function (m) { try { m(A); } catch (e) { if (window.console) console.error('module failed', e); } });
+
+  /* ---------- traditional safety net ----------
+     Notes, meanings and glosses are English sentences that contain Chinese ("放学 = class is over"). In Traditional mode every Chinese character that is
+     added to the screen is converted with the app's own simplified/traditional pairs (lessons, stories, sentences, photos), so none stays Simplified. */
+  var S2T = {};
+  function addPair(sv, tv) { if (typeof sv !== 'string' || typeof tv !== 'string') return; var a = Array.from(sv), b = Array.from(tv); if (a.length === b.length) a.forEach(function (c, i) { if (c !== b[i]) S2T[c] = b[i]; }); }
+  (function () {
+    function walk(o) {
+      if (!o || typeof o !== 'object') return;
+      if (typeof o.s === 'string' && typeof o.t === 'string') addPair(o.s, o.t);
+      if (typeof o.zh === 'string' && typeof o.zht === 'string') addPair(o.zh, o.zht);
+      if (Array.isArray(o.chunks) && Array.isArray(o.tchunks)) o.chunks.forEach(function (c, i) { addPair(c, o.tchunks[i]); });
+      if (Array.isArray(o)) o.forEach(walk); else Object.keys(o).forEach(function (k) { if (typeof o[k] === 'object') walk(o[k]); });
+    }
+    walk(C); walk(window.PHOTOS);
+  })();
+  function toTrad(text) { return Array.from(text).map(function (c) { return S2T[c] || c; }).join(''); }
+  A.toTrad = toTrad;
+  function tradNodes(root) {
+    if (script !== 't' || !root || root.nodeType === 8) return;
+    if (root.nodeType === 3) { if (/[\u4e00-\u9fff]/.test(root.nodeValue)) { var v = toTrad(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; } return; }
+    if (root.nodeType !== 1 || /^(SCRIPT|STYLE|SVG|CANVAS)$/i.test(root.nodeName)) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) {
+      if (!/[\u4e00-\u9fff]/.test(n.nodeValue) || (n.parentNode && n.parentNode.closest && n.parentNode.closest('svg'))) continue;
+      var t = toTrad(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t;
+    }
+  }
+  new MutationObserver(function (recs) {
+    if (script !== 't') return;
+    recs.forEach(function (r) { Array.prototype.forEach.call(r.addedNodes, tradNodes); });
+  }).observe(document.body, { childList: true, subtree: true });
 
   /* The bottom bar lives on <body>, OUTSIDE the scrolling screens, so iPhones/iPads can never scroll it away. */
   var nav = document.createElement('nav');

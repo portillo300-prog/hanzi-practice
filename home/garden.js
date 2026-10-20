@@ -11,6 +11,11 @@
     { cat: 'Treats', items: [['🍎', 12, 'Apple'], ['🍓', 12, 'Strawberry'], ['🍉', 12, 'Watermelon'], ['🍭', 12, 'Lollipop'], ['🍒', 14, 'Cherries'], ['🍪', 14, 'Cookie'], ['🧁', 16, 'Cupcake'], ['🍦', 16, 'Ice cream'], ['🍩', 16, 'Donut'], ['🍫', 16, 'Chocolate'], ['🍰', 24, 'Shortcake'], ['🎂', 30, 'Birthday cake']] },
     { cat: 'Sky & fun', items: [['☁️', 10, 'Cloud'], ['✨', 14, 'Sparkles'], ['☀️', 16, 'Sun'], ['🎈', 16, 'Balloon'], ['🎀', 16, 'Ribbon'], ['🌙', 20, 'Moon'], ['🏮', 22, 'Lantern'], ['🌟', 24, 'Glowing star'], ['🎁', 26, 'Present'], ['🎨', 26, 'Paint palette'], ['🌈', 30, 'Rainbow'], ['🚗', 30, 'Little car'], ['🚂', 34, 'Train'], ['⛲', 38, 'Fountain'], ['🏡', 45, 'Little house'], ['🚀', 45, 'Rocket'], ['🎪', 50, 'Circus tent'], ['🎠', 55, 'Carousel'], ['🎡', 60, 'Ferris wheel']] }
   ];
+  SHOP.unshift({ cat: 'Houses & buildings', items: [['⛺', 40, 'Tent', 1], ['🏠', 60, 'House', 1], ['🏫', 90, 'School', 1], ['🏰', 130, 'Castle', 1], ['🏯', 150, 'Pagoda', 1]] });
+  SHOP.push({ cat: 'Pet corner', items: [['🦴', 10, 'Bone'], ['🥣', 12, 'Food bowl'], ['⚽', 16, 'Soccer ball'], ['🎾', 16, 'Tennis ball'], ['🧸', 24, 'Teddy bear'], ['🛏️', 30, 'Cozy bed', 1]] });
+  SHOP.push({ cat: 'Chinese corner', items: [['🧧', 25, 'Red envelope'], ['🥟', 20, 'Dumpling'], ['🍵', 25, 'Tea'], ['🐉', 90, 'Dragon', 1], ['🎎', 40, 'Dolls']] });
+  var BIG = { '🏡': true, '🐼': true };   // existing items that look better bigger
+   SHOP.forEach(function (c) { c.items.forEach(function (it) { if (it[3]) BIG[it[0]] = true; }); });
   var SCENES = [
     { id: 'meadow', name: 'Sunny meadow', price: 0 },
     { id: 'blossom', name: 'Blossom sky', price: 40 },
@@ -23,13 +28,13 @@
   function save() { store.set('garden', G); }
   function esc(s) { return A.esc(s); }
 
-  A.tabs.push({ id: 'garden', icon: '🌸', label: 'Garden', href: '#/garden', order: 40 });
+  A.tabs.push({ id: 'garden', icon: '🌍', label: 'World', href: '#/garden', order: 40 });
   A.routes.garden = function (p) { renderGarden(p[0] === 'shop' ? 'shop' : 'garden'); };
 
   function header(mode) {
-    return '<div class="topbar"><span class="title gtitle">🌸 My Garden</span>' + A.walletPill() + '</div>' +
+    return '<div class="topbar"><span class="title gtitle">🌍 My World</span>' + A.walletPill() + '</div>' +
       '<div class="modebar"><div class="seg" role="group" aria-label="Garden or shop">' +
-      '<button data-gm="garden" class="' + (mode === 'garden' ? 'on' : '') + '">🌷 My Garden</button>' +
+      '<button data-gm="garden" class="' + (mode === 'garden' ? 'on' : '') + '">🌷 My World</button>' +
       '<button data-gm="shop" class="' + (mode === 'shop' ? 'on' : '') + '">🛍️ Shop</button></div></div>';
   }
   function bindHeader() {
@@ -46,7 +51,7 @@
   function sceneHTML() {
     var items = placedItems();
     return items.map(function (i) {
-      return '<span class="gi' + (selected === i.id ? ' sel' : '') + '" data-id="' + i.id + '" style="left:' + i.x + '%;top:' + i.y + '%;z-index:' + Math.round(i.y) + '">' + i.e + '</span>';
+      return '<span class="gi' + (BIG[i.e] ? ' big' : '') + (selected === i.id ? ' sel' : '') + '" data-id="' + i.id + '" style="left:' + i.x + '%;top:' + i.y + '%;z-index:' + Math.round(i.y) + '">' + i.e + '</span>';
     }).join('') + (items.length ? '' : '<div class="scene-empty">Your garden is waiting!<br><small>Earn ⭐ by practicing and playing, then visit the Shop 🛍️</small></div>');
   }
   function trayHTML() {
@@ -55,23 +60,47 @@
     return t.map(function (i) { return '<button class="tt" data-id="' + i.id + '" aria-label="Place ' + i.e + '">' + i.e + '</button>'; }).join('');
   }
 
+  /* ---- the pet walks around the world; tap it to say hi ---- */
+  function petHTML() {
+    var d = A.petDog && A.petDog(); if (!d) return '';
+    return '<div class="gpet" id="gpet" aria-label="' + esc(d.name) + '"><div class="gpet-in">' + A.petSVG(d.color) + '</div><div class="gpet-say" id="gpetsay" hidden></div></div>';
+  }
+  function bindPet() {
+    var el = $('gpet'); if (!el) return;
+    el.onclick = function () {
+      el.classList.remove('pt-r-wiggle'); void el.offsetWidth; el.classList.add('pt-r-wiggle'); FX.pop();
+      var b = $('gpetsay'); if (b) { b.innerHTML = '<b>汪汪</b>'; b.hidden = false; setTimeout(function () { b.hidden = true; el.classList.remove('pt-r-wiggle'); }, 1500); }
+    };
+  }
+  /* ---- the world grows: every 10 things placed is a milestone ---- */
+  function worldBar() {
+    var n = placedItems().length, lv = 1 + Math.floor(n / 10), into = n % 10;
+    return '<div class="worldbar" id="worldbar"><span>🌍 World level <b>' + lv + '</b></span><span class="wbar"><i style="width:' + (into * 10) + '%"></i></span><small>' + (10 - into) + ' more to level ' + (lv + 1) + '</small></div>';
+  }
+  function checkMilestone() {
+    var n = placedItems().length, lv = Math.floor(n / 10);
+    if (lv > (G.mile || 0)) { G.mile = lv; save(); A.earnGold(1); FX.fanfare(); FX.confetti({ kind: 'big' }); A.toast('🌍 Your world reached level ' + (lv + 1) + '!'); }
+  }
+
   function renderGarden(mode) {
     if (mode === 'shop') return renderShop();
     selected = null;
     app.innerHTML =
       '<div class="screen has-tabs garden">' + header('garden') +
-      '<div class="scene bg-' + G.bg + '" id="scene">' + sceneHTML() + '</div>' +
+      '<div class="scene bg-' + G.bg + '" id="scene"><div class="sitems" id="sitems">' + sceneHTML() + '</div>' + petHTML() + '</div>' +
+      worldBar() +
       '<div class="scenebar" id="scenebar"></div>' +
       '<div class="traytitle">My tray <small>tap to place</small></div><div class="tray" id="tray">' + trayHTML() + '</div>' +
       A.tabbar('garden') + '</div>';
     bindHeader();
     bindScene();
     bindTray();
+    bindPet();
   }
 
   function refreshScene() {
     var s = $('scene'); if (!s) return;
-    s.innerHTML = sceneHTML(); bindScene();
+    $('sitems').innerHTML = sceneHTML(); bindScene(); var wb = $('worldbar'); if (wb) wb.outerHTML = worldBar();
     var t = $('tray'); if (t) { t.innerHTML = trayHTML(); bindTray(); }
     var bar = $('scenebar');
     if (bar) {
@@ -88,7 +117,7 @@
         var it = G.inv.filter(function (i) { return i.id === id; })[0];
         if (!it) return;
         it.placed = true; it.x = 22 + Math.random() * 56; it.y = 30 + Math.random() * 45;
-        selected = it.id; save(); FX.pop(); refreshScene();
+        selected = it.id; save(); FX.pop(); refreshScene(); checkMilestone();
       };
     });
   }
@@ -126,18 +155,18 @@
     var bal = A.wallet().bal;
     var scenes = '<div class="sh-cat"><div class="section-title">Scenes</div><div class="sgrid scenes">' + SCENES.map(function (s) {
       var owned = G.bgs.indexOf(s.id) >= 0;
-      return '<button class="scard scene-card' + (owned ? ' owned' : '') + (!owned && bal < s.price ? ' cant' : '') + '" data-scene="' + s.id + '">' +
+      return '<button class="scard scene-card' + (owned ? ' owned' : '') + (!owned && !A.canAfford(s.price) ? ' cant' : '') + '" data-scene="' + s.id + '">' +
         '<span class="swatch bg-' + s.id + '"></span><span class="sn">' + esc(s.name) + '</span>' +
         '<span class="sp">' + (G.bg === s.id ? '✓ In use' : owned ? 'Use it' : '⭐ ' + s.price) + '</span></button>';
     }).join('') + '</div></div>';
     var cats = SHOP.map(function (c) {
       return '<div class="sh-cat"><div class="section-title">' + c.cat + '</div><div class="sgrid">' + c.items.map(function (it) {
-        return '<button class="scard' + (bal < it[1] ? ' cant' : '') + '" data-e="' + it[0] + '" data-p="' + it[1] + '" data-n="' + esc(it[2]) + '"><span class="se">' + it[0] + '</span><span class="sp">⭐ ' + it[1] + '</span></button>';
+        return '<button class="scard' + (!A.canAfford(it[1]) ? ' cant' : '') + '" data-e="' + it[0] + '" data-p="' + it[1] + '" data-n="' + esc(it[2]) + '"><span class="se">' + it[0] + '</span><span class="sp">⭐ ' + it[1] + '</span></button>';
       }).join('') + '</div></div>';
     }).join('');
     app.innerHTML = '<div class="screen has-tabs garden">' + header('shop') +
-      '<p class="shophint">You have <b>⭐ <span class="wnum">' + bal + '</span></b>. Earn more by practicing, quizzes and games!</p>' + scenes + cats + A.tabbar('garden') + '</div>';
-    bindHeader();
+      '<p class="shophint">You have <b>⭐ <span class="wnum">' + bal + '</span></b> and <b>🌟 <span class="gnum">' + A.wallet().gold + '</span></b> (each 🌟 counts as ' + A.goldWorth + ' ⭐). Earn more by practicing, reading and games!</p>' + A.swapButton() + scenes + cats + A.tabbar('garden') + '</div>';
+    bindHeader(); A.bindSwap(app, renderShop);
     Array.prototype.forEach.call(app.querySelectorAll('[data-e]'), function (b) {
       b.onclick = function () { confirmBuy({ e: b.getAttribute('data-e'), p: parseInt(b.getAttribute('data-p'), 10), n: b.getAttribute('data-n') }); };
     });
@@ -155,10 +184,24 @@
     return { el: m, close: close };
   }
   A.modal = modal;
+  // exchange: swap super stars 🌟 for regular stars ⭐ (shown on the shop and pet pages)
+  A.swapButton = function () { return '<div class="swaprow"><button class="btn" data-swap="1">🔁 Swap 🌟 for ⭐</button></div>'; };
+  A.bindSwap = function (root, after) {
+    Array.prototype.forEach.call((root || app).querySelectorAll('[data-swap]'), function (b) { b.onclick = function () { A.openExchange(after); }; });
+  };
+  A.openExchange = function (after) {
+    var g = A.wallet().gold, w = A.goldWorth;
+    var m = modal('<div class="me">🔁</div><div class="mn">Swap super stars</div><div class="mm">You have <b>🌟 ' + g + '</b>. Each 🌟 swaps for <b>⭐ ' + w + '</b>.</div>' +
+      '<div class="mb">' + (g > 0 ? '<button class="btn primary" id="x-one">Swap 1 🌟 → ⭐ ' + w + '</button>' : '') + (g > 1 ? '<button class="btn" id="x-all">Swap all ' + g + ' 🌟 → ⭐ ' + (g * w) + '</button>' : '') + '<button class="btn" id="x-no">' + (g > 0 ? 'Not now' : 'OK') + '</button></div>');
+    function done(n) { if (A.exchangeGold(n)) { FX.ding(); FX.confetti({ x: 0.5, y: 0.5, n: 40 }); } m.close(); if (after) after(); }
+    if ($('x-one')) $('x-one').onclick = function () { done(1); };
+    if ($('x-all')) $('x-all').onclick = function () { done(A.wallet().gold); };
+    $('x-no').onclick = m.close;
+  };
 
   function confirmBuy(it) {
-    var bal = A.wallet().bal;
-    if (bal < it.p) {
+    var bal = A.wallet().bal + A.wallet().gold * A.goldWorth;
+    if (!A.canAfford(it.p)) {
       var m0 = modal('<div class="me">' + it.e + '</div><div class="mn">' + esc(it.n) + '</div><div class="mm">You need <b>' + (it.p - bal) + ' more ⭐</b>. Keep practicing and playing, you can do it!</div><div class="mb"><button class="btn primary" id="m-ok">OK</button></div>');
       $('m-ok').onclick = m0.close; return;
     }
@@ -166,7 +209,7 @@
       '<div class="mb"><button class="btn primary" id="m-buy">Buy it!</button><button class="btn" id="m-no">Not now</button></div>');
     $('m-no').onclick = m.close;
     $('m-buy').onclick = function () {
-      if (!A.spend(it.p)) return;
+      if (!A.spendMixed(it.p)) return;
       G.inv.push({ id: G.next++, e: it.e, placed: false, x: 50, y: 50 }); save();
       FX.ding(); FX.confetti({ x: 0.5, y: 0.5, n: 40 });
       m.el.querySelector('.mcard').innerHTML = '<div class="me pop-in">' + it.e + '</div><div class="mn">It\'s yours!</div><div class="mm">Waiting in your tray. Let\'s put it in your garden.</div>' +
@@ -179,8 +222,8 @@
   function chooseScene(id) {
     var s = SCENES.filter(function (x) { return x.id === id; })[0];
     if (G.bgs.indexOf(id) >= 0) { G.bg = id; save(); FX.pop(); renderShop(); return; }
-    var bal = A.wallet().bal;
-    if (bal < s.price) {
+    var bal = A.wallet().bal + A.wallet().gold * A.goldWorth;
+    if (!A.canAfford(s.price)) {
       var m0 = modal('<div class="swatch big bg-' + id + '"></div><div class="mn">' + esc(s.name) + '</div><div class="mm">You need <b>' + (s.price - bal) + ' more ⭐</b>. You can do it!</div><div class="mb"><button class="btn primary" id="m-ok">OK</button></div>');
       $('m-ok').onclick = m0.close; return;
     }
@@ -188,7 +231,7 @@
       '<div class="mb"><button class="btn primary" id="m-buy">Buy it!</button><button class="btn" id="m-no">Not now</button></div>');
     $('m-no').onclick = m.close;
     $('m-buy').onclick = function () {
-      if (!A.spend(s.price)) return;
+      if (!A.spendMixed(s.price)) return;
       G.bgs.push(id); G.bg = id; save(); FX.ding(); FX.confetti({ x: 0.5, y: 0.5, n: 40 });
       m.close(); renderShop();
     };

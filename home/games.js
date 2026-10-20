@@ -12,13 +12,13 @@
   A.routes.g = function (p) { var h = A.gameRoutes[p[0]]; if (h) return h(p.slice(1)); renderHub(); };
 
   function renderHub() {
-    var list = GAMES.slice().sort(function (a, b) { return (a.order || 50) - (b.order || 50); });
+    var list = GAMES.filter(function (g) { return !g.hidden; }).sort(function (a, b) { return (a.order || 50) - (b.order || 50); });
     app.innerHTML =
       '<div class="screen has-tabs">' +
       '<div class="topbar"><span class="title gtitle">🎮 Games</span>' + A.walletPill() + '</div>' +
       '<p class="shophint">Play, earn ⭐, and spend them in your Garden 🌷</p>' +
       '<div class="gamegrid">' + list.map(function (g, i) {
-        return '<button class="gamecard" style="animation-delay:' + (i * 0.05) + 's" data-go="#/g/' + g.id + '"><span class="gicon">' + g.icon + '</span><span class="gname">' + g.name + '</span><span class="gtag">' + g.tag + '</span><span class="gearn">earn up to ⭐ 8</span></button>';
+        return '<button class="gamecard" style="animation-delay:' + (i * 0.05) + 's" data-go="#/g/' + g.id + '"><span class="gicon">' + g.icon + '</span><span class="gname">' + g.name + '</span><span class="gtag">' + g.tag + '</span><span class="gearn">' + (g.earnText || 'earn up to ⭐ 8') + '</span></button>';
       }).join('') + '</div>' + A.tabbar('games') + '</div>';
   }
 
@@ -102,11 +102,11 @@
   /* ---------------- the "pop" games: things that move, tap the right one ---------------- */
   var POPS = [
     { id: 'bubbles', order: 10, name: 'Bubble Pop', icon: '<span class="bubble-ico"></span>', tag: 'Pop the bubble that matches!', how: 'A word shows up. Pop the bubble with the right character! Wrong bubbles just wobble, so try again.', dir: 'up', body: 'b-bubble', arena: 'sea', done: 'Bubbles popped!' },
-    { id: 'fish', order: 20, name: 'Fish Pond', icon: '🐟', tag: 'Tap the fish with the right character!', how: 'Fish swim across the pond. Tap the fish that has the right character!', dir: 'right', body: 'b-fish', arena: 'pond', done: 'Fish caught!' },
+    { id: 'fish', hidden: true, order: 20, name: 'Fish Pond', icon: '🐟', tag: 'Tap the fish with the right character!', how: 'Fish swim across the pond. Tap the fish that has the right character!', dir: 'right', body: 'b-fish', arena: 'pond', done: 'Fish caught!' },
     { id: 'stars', order: 30, name: 'Star Catcher', icon: '⭐', tag: 'Catch the falling star that matches!', how: 'Stars fall from the sky. Catch the one with the right character!', dir: 'down', body: 'b-starb', arena: 'sky', done: 'Stars caught!' }
   ];
   POPS.forEach(function (cfg) {
-    A.registerGame({ id: cfg.id, name: cfg.name, icon: cfg.icon, tag: cfg.tag, order: cfg.order }, function (p) {
+    A.registerGame({ id: cfg.id, name: cfg.name, icon: cfg.icon, tag: cfg.tag, order: cfg.order, hidden: cfg.hidden }, function (p) {
       if (p[0] === 'play') return popPlay(cfg);
       A.gameSetup(cfg);
     });
