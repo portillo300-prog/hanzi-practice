@@ -480,7 +480,7 @@
       showPraise(FX.praise(), false);
       if (total > 1) FX.word(); else FX.ding();
       FX.confetti({ x: 0.5, y: 0.42, n: total > 1 ? 95 : 60 });
-      earn(done[keyOf(W.L, W.it)] ? 1 : (total > 1 ? 4 : 3));
+      earn(done[keyOf(W.L, W.it)] ? 1 : (total > 1 ? 5 : 4));
       done[keyOf(W.L, W.it)] = true;
       store.set('done', done);
       hint('');

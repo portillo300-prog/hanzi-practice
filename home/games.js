@@ -18,7 +18,7 @@
       '<div class="topbar"><span class="title gtitle">🎮 Games</span>' + A.walletPill() + '</div>' +
       '<p class="shophint">Play, earn ⭐, and spend them in your Garden 🌷</p>' +
       '<div class="gamegrid">' + list.map(function (g, i) {
-        return '<button class="gamecard" style="animation-delay:' + (i * 0.05) + 's" data-go="#/g/' + g.id + '"><span class="gicon">' + g.icon + '</span><span class="gname">' + g.name + '</span><span class="gtag">' + g.tag + '</span><span class="gearn">' + (g.earnText || 'earn up to ⭐ 8') + '</span></button>';
+        return '<button class="gamecard" style="animation-delay:' + (i * 0.05) + 's" data-go="#/g/' + g.id + '"><span class="gicon">' + g.icon + '</span><span class="gname">' + g.name + '</span><span class="gtag">' + g.tag + '</span><span class="gearn">' + (g.earnText || 'earn up to ⭐ 10') + '</span></button>';
       }).join('') + '</div>' + A.tabbar('games') + '</div>';
   }
 
@@ -227,7 +227,7 @@
     function finish() {
       alive = false; cancelAnimationFrame(raf);
       var stars = firstTry >= 7 ? 3 : firstTry >= 5 ? 2 : 1;
-      A.earn(2 + stars * 2);
+      A.earn(3 * stars + 1);
       A.showWin({
         emoji: stars === 3 ? '🏆' : '🎉', title: cfg.done, accent: A.acc(lesson), stars: stars,
         lines: [firstTry + ' of ' + ROUNDS + ' on the first try. You earned ⭐ ' + (2 + stars * 2) + '!'],

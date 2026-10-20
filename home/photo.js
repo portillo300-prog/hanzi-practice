@@ -77,7 +77,7 @@
   function end() {
     var n = S.order.length, first = S.firsts, stars = A.starsFor ? A.starsFor(first, n) : (first >= 7 ? 3 : first >= 5 ? 2 : 1);
     S = null;
-    A.earn(2 + stars * 2);
+    A.earn(3 * stars + 1);
     A.showWin({
       emoji: stars === 3 ? '🏆' : '📸', title: 'Great reading!', accent: A.cssVar('--accent'), stars: stars,
       lines: ['You matched ' + first + ' of ' + n + ' photos on the first try.'],

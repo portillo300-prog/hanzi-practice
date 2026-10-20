@@ -11,7 +11,7 @@
     { cat: 'Treats', items: [['🍎', 12, 'Apple'], ['🍓', 12, 'Strawberry'], ['🍉', 12, 'Watermelon'], ['🍭', 12, 'Lollipop'], ['🍒', 14, 'Cherries'], ['🍪', 14, 'Cookie'], ['🧁', 16, 'Cupcake'], ['🍦', 16, 'Ice cream'], ['🍩', 16, 'Donut'], ['🍫', 16, 'Chocolate'], ['🍰', 24, 'Shortcake'], ['🎂', 30, 'Birthday cake']] },
     { cat: 'Sky & fun', items: [['☁️', 10, 'Cloud'], ['✨', 14, 'Sparkles'], ['☀️', 16, 'Sun'], ['🎈', 16, 'Balloon'], ['🎀', 16, 'Ribbon'], ['🌙', 20, 'Moon'], ['🏮', 22, 'Lantern'], ['🌟', 24, 'Glowing star'], ['🎁', 26, 'Present'], ['🎨', 26, 'Paint palette'], ['🌈', 30, 'Rainbow'], ['🚗', 30, 'Little car'], ['🚂', 34, 'Train'], ['⛲', 38, 'Fountain'], ['🏡', 45, 'Little house'], ['🚀', 45, 'Rocket'], ['🎪', 50, 'Circus tent'], ['🎠', 55, 'Carousel'], ['🎡', 60, 'Ferris wheel']] }
   ];
-  SHOP.unshift({ cat: 'Houses & buildings', items: [['⛺', 40, 'Tent', 1], ['🏠', 60, 'House', 1], ['🏫', 90, 'School', 1], ['🏰', 130, 'Castle', 1], ['🏯', 150, 'Pagoda', 1]] });
+  SHOP.unshift({ cat: 'Houses & buildings', items: [['⛺', 40, 'Tent', 1], ['🏠', 50, 'House', 1], ['🏫', 70, 'School', 1], ['🏰', 90, 'Castle', 1], ['🏯', 100, 'Pagoda', 1]] });
   SHOP.push({ cat: 'Pet corner', items: [['🦴', 10, 'Bone'], ['🥣', 12, 'Food bowl'], ['⚽', 16, 'Soccer ball'], ['🎾', 16, 'Tennis ball'], ['🧸', 24, 'Teddy bear'], ['🛏️', 30, 'Cozy bed', 1]] });
   SHOP.push({ cat: 'Chinese corner', items: [['🧧', 25, 'Red envelope'], ['🥟', 20, 'Dumpling'], ['🍵', 25, 'Tea'], ['🐉', 90, 'Dragon', 1], ['🎎', 40, 'Dolls']] });
   var BIG = { '🏡': true, '🐼': true };   // existing items that look better bigger
@@ -79,7 +79,7 @@
   }
   function checkMilestone() {
     var n = placedItems().length, lv = Math.floor(n / 10);
-    if (lv > (G.mile || 0)) { G.mile = lv; save(); A.earnGold(1); FX.fanfare(); FX.confetti({ kind: 'big' }); A.toast('🌍 Your world reached level ' + (lv + 1) + '!'); }
+    if (lv > (G.mile || 0)) { G.mile = lv; save(); A.earn(25); FX.fanfare(); FX.confetti({ kind: 'big' }); A.toast('🌍 Your world reached level ' + (lv + 1) + '!'); }
   }
 
   function renderGarden(mode) {

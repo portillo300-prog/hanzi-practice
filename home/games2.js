@@ -9,7 +9,7 @@
       '<div class="topbar"><button class="btn" id="gquit">✕ Quit</button><span class="title"><span id="gprog"></span></span><span class="tools">' + A.soundBtn() + '</span></div>';
   }
   function win(cfg, lesson, good, total, again) {
-    var stars = A.starsFor(good, total), pay = 2 + stars * 2;
+    var stars = A.starsFor(good, total), pay = 3 * stars + 1;
     A.earn(pay);
     A.showWin({
       emoji: stars === 3 ? '🏆' : '🎉', title: cfg.done, accent: A.acc(lesson), stars: stars,
@@ -120,7 +120,7 @@
             var r = el.getBoundingClientRect(); FX.confetti({ x: (r.left + r.width / 2) / window.innerWidth, y: (r.top + r.height / 2) / window.innerHeight, n: 22 });
             if (matched === picks.length) {
               alive = false;
-              var stars = moves <= 9 ? 3 : moves <= 13 ? 2 : 1, pay = 2 + stars * 2; A.earn(pay);
+              var stars = moves <= 9 ? 3 : moves <= 13 ? 2 : 1, pay = 3 * stars + 1; A.earn(pay);
               setTimeout(function () {
                 A.showWin({ emoji: stars === 3 ? '🏆' : '🎉', title: memCfg.done, accent: A.acc(lesson), stars: stars, lines: ['You did it in ' + moves + ' moves. You earned ⭐ ' + pay + '!'],
                   primary: { label: 'Play again', fn: function () { A.go('#/g/memory/play'); } }, secondary: { label: '🎮 Games', fn: function () { A.go('#/games'); } } });

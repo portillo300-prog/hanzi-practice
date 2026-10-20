@@ -8,19 +8,19 @@
 
   /* ---------------- the dogs (same chibi shape, different fur) ---------------- */
   var PETS = {
-    sunset: { name: 'Sunset orange', fur: '#e8832e', dark: '#d26d1a', chest: '#fff0d8', mask: '#ffd9a8', ear: '#ffb0a0', blush: '#ff8f7a', price: 200 },
-    honey:  { name: 'Honey cream',   fur: '#eec88a', dark: '#dcae68', chest: '#fff6e6', mask: '#fbe6c4', ear: '#ffb7a8', blush: '#ff9d8a', price: 200 },
-    choco:  { name: 'Chocolate',     fur: '#8a5a3c', dark: '#6f452b', chest: '#f3dcc0', mask: '#e0b78e', ear: '#e8a79a', blush: '#f09a88', price: 200 },
-    black:  { name: 'Black and tan', fur: '#4a3a38', dark: '#362a28', chest: '#f0d2a8', mask: '#d9a066', ear: '#c98a8a', blush: '#e8907e', price: 300 },
-    snow:   { name: 'Snow white',    fur: '#ffffff', dark: '#e3e8f0', chest: '#f7f9fc', mask: '#f1f3f8', ear: '#ffc2d1', blush: '#ffa3b8', price: 450 },
-    candy:  { name: 'Cotton candy',  fur: '#f7a8d0', dark: '#e98fbd', chest: '#fff0f7', mask: '#ffd6ea', ear: '#ffc2de', blush: '#ff8fb8', price: 700 },
-    catorange: { kind: 'cat', name: 'Orange tabby cat', fur: '#f0a458', dark: '#d9803a', chest: '#fff1dc', stripe: '#c8702a', ear: '#ffb3b3', iris: '#8bd17c', price: 300 },
-    catgray:   { kind: 'cat', name: 'Gray cat', fur: '#aab3bd', dark: '#8d97a3', chest: '#eef1f4', stripe: '#7d8793', ear: '#ffc0c8', iris: '#ffcf5a', price: 400 },
-    catblack:  { kind: 'cat', name: 'Black cat', fur: '#3d3d48', dark: '#2a2a33', chest: '#4d4d59', stripe: null, ear: '#c98a98', iris: '#ffe066', price: 400 },
-    koala:     { kind: 'koala', name: 'Koala', fur: '#a9b0b8', dark: '#8b929b', chest: '#eef0f2', ear: '#ffd3dc', price: 500 },
-    panda:     { kind: 'panda', name: 'Panda', fur: '#ffffff', price: 900 },
-    uniwhite:  { kind: 'unicorn', name: 'White unicorn', fur: '#ffffff', dark: '#e6dff2', chest: '#fff4fa', ear: '#ffc6dd', mane: ['#ff9ec4', '#ffc27a', '#fff08a', '#9ee6b0', '#8fd0ff', '#c4a6ff'], price: 1500 },
-    unililac:  { kind: 'unicorn', name: 'Lilac unicorn', fur: '#e9dcff', dark: '#cdb8f2', chest: '#f7f0ff', ear: '#ffc6dd', mane: ['#ff9ec4', '#ffc27a', '#fff08a', '#9ee6b0', '#8fd0ff', '#c4a6ff'], price: 2000 }
+    sunset: { name: 'Sunset orange', fur: '#e8832e', dark: '#d26d1a', chest: '#fff0d8', mask: '#ffd9a8', ear: '#ffb0a0', blush: '#ff8f7a', price: 150 },
+    honey:  { name: 'Honey cream',   fur: '#eec88a', dark: '#dcae68', chest: '#fff6e6', mask: '#fbe6c4', ear: '#ffb7a8', blush: '#ff9d8a', price: 150 },
+    choco:  { name: 'Chocolate',     fur: '#8a5a3c', dark: '#6f452b', chest: '#f3dcc0', mask: '#e0b78e', ear: '#e8a79a', blush: '#f09a88', price: 150 },
+    black:  { name: 'Black and tan', fur: '#4a3a38', dark: '#362a28', chest: '#f0d2a8', mask: '#d9a066', ear: '#c98a8a', blush: '#e8907e', price: 150 },
+    snow:   { name: 'Snow white',    fur: '#ffffff', dark: '#e3e8f0', chest: '#f7f9fc', mask: '#f1f3f8', ear: '#ffc2d1', blush: '#ffa3b8', price: 250 },
+    candy:  { name: 'Cotton candy',  fur: '#f7a8d0', dark: '#e98fbd', chest: '#fff0f7', mask: '#ffd6ea', ear: '#ffc2de', blush: '#ff8fb8', price: 350 },
+    catorange: { kind: 'cat', name: 'Orange tabby cat', fur: '#f0a458', dark: '#d9803a', chest: '#fff1dc', stripe: '#c8702a', ear: '#ffb3b3', iris: '#8bd17c', price: 150 },
+    catgray:   { kind: 'cat', name: 'Gray cat', fur: '#aab3bd', dark: '#8d97a3', chest: '#eef1f4', stripe: '#7d8793', ear: '#ffc0c8', iris: '#ffcf5a', price: 200 },
+    catblack:  { kind: 'cat', name: 'Black cat', fur: '#3d3d48', dark: '#2a2a33', chest: '#4d4d59', stripe: null, ear: '#c98a98', iris: '#ffe066', price: 200 },
+    koala:     { kind: 'koala', name: 'Koala', fur: '#a9b0b8', dark: '#8b929b', chest: '#eef0f2', ear: '#ffd3dc', price: 250 },
+    panda:     { kind: 'panda', name: 'Panda', fur: '#ffffff', price: 400 },
+    uniwhite:  { kind: 'unicorn', name: 'White unicorn', fur: '#ffffff', dark: '#e6dff2', chest: '#fff4fa', ear: '#ffc6dd', mane: ['#ff9ec4', '#ffc27a', '#fff08a', '#9ee6b0', '#8fd0ff', '#c4a6ff'], price: 500 },
+    unililac:  { kind: 'unicorn', name: 'Lilac unicorn', fur: '#e9dcff', dark: '#cdb8f2', chest: '#f7f0ff', ear: '#ffc6dd', mane: ['#ff9ec4', '#ffc27a', '#fff08a', '#9ee6b0', '#8fd0ff', '#c4a6ff'], price: 600 }
   };
   var COLORS = PETS;
   var SECTIONS = [{ title: '🐶 Dogs', keys: ['sunset', 'honey', 'choco', 'black', 'snow', 'candy'] }, { title: '🐱 Cats', keys: ['catorange', 'catgray', 'catblack'] },

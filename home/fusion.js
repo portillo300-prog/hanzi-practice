@@ -20,7 +20,7 @@
   function foundCount(room) { return recipesOf(room).filter(function (r) { return S.found[r.key]; }).length; }
   function allResults() { var o = {}; D.rooms.forEach(function (rm) { rm.recipes.forEach(function (r) { o[r.r] = 1; }); }); return o; }
 
-  A.registerGame({ id: 'fusion', name: 'Hanzi Fusion', icon: '🧪', tag: 'Mix parts to make new characters!', order: 35, earnText: 'earn ⭐ 3 per discovery + 🌟 per room' }, function (p) {
+  A.registerGame({ id: 'fusion', name: 'Hanzi Fusion', icon: '🧪', tag: 'Mix parts to make new characters!', order: 35, earnText: 'earn ⭐ 4 per discovery + 35 per room' }, function (p) {
     if (p[0] === 'room') return renderRoom(p[1]);
     renderHub();
   });
@@ -131,7 +131,7 @@
     var first = !S.found[hit.key];
     S.found[hit.key] = 1;
     if (first) {
-      A.earn(3);
+      A.earn(4);
       if (R.recs.some(function (x) { return x.a === hit.r || x.b === hit.r; })) R.tiles.push({ id: R.tiles.length, ch: hit.r });
     }
     save();
@@ -177,10 +177,10 @@
     A.say({ s: r.key }, false, true);
   }
   function roomDone() {
-    A.earn(10); A.earnGold(1);
+    A.earn(35);
     A.showWin({
       emoji: R.room.icon, title: 'Room complete!', accent: A.cssVar('--accent'), stars: 3,
-      lines: ['You found every character in ' + R.room.name + '!', '+10 ⭐ and +1 🌟'],
+      lines: ['You found every character in ' + R.room.name + '!', '+35 ⭐'],
       primary: { label: 'More rooms', fn: function () { A.go('#/g/fusion'); } },
       secondary: { label: 'Stay here', fn: function () { } }
     });

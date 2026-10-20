@@ -60,7 +60,7 @@
       if (!alive) return;
       if (idx >= seq.length) {
         alive = false;
-        var stars = A.starsFor(good, seq.length), pay = 2 + stars * 2;
+        var stars = A.starsFor(good, seq.length), pay = 3 * stars + 1;
         A.earn(pay);
         return A.showWin({
           emoji: stars === 3 ? '🏆' : '🎉', title: cfg.done, accent: A.acc(lesson), stars: stars,
