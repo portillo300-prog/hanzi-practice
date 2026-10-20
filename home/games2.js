@@ -233,8 +233,12 @@
         if (built === want) {
           locked = true; if (miss === 0) good++;
           FX.word(); FX.confetti({ x: 0.5, y: 0.35, n: 80 });
-          $('spy').innerHTML = A.pinyinHTML(st.py, null, 'md'); msg('🎉 Great sentence!', 'good');
-          idx++; setTimeout(draw, 2600);
+          $('spy').innerHTML = A.pinyinHTML(st.py, null, 'md');
+          var oid = window.OWNV.idForText(st.chunks.join(''));      // the narrator reads the finished sentence
+          msg('🎉 Great sentence! ' + window.OWNV.btn(oid, 'sm', 'Hear the sentence again'), 'good');
+          window.OWNV.bind($('wlmsg'));
+          if (oid) window.OWNV.playFile(window.OWNV.file(oid), false, true);
+          idx++; setTimeout(draw, Math.max(2600, oid ? window.OWNV.secs(oid) * 1000 + 1400 : 0));
         } else {
           locked = true; miss++; FX.oops(); msg('Almost! Try again.', 'try');
           var s = $('sslots'); s.classList.add('wob');

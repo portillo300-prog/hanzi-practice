@@ -286,9 +286,12 @@
     if (d.full < 40) speak('hungry');
   }
 
+  var SAYID = { woof: 'PET-01', meow: 'PET-02', hello: 'PET-03', yum: 'PET-04', hungry: 'PET-05', thanks: 'PET-06', love: 'PET-07' };
   function speak(k, ms) {
     var b = document.getElementById('ptbubble'); if (!b) return;
     b.innerHTML = say(k); b.hidden = false;
+    // the narrator says it too when she taps the pet (not for the quiet "hungry" bubble shown when the screen opens)
+    if (ms && SAYID[k] && window.OWNV) window.OWNV.playFile(window.OWNV.file(SAYID[k]), false, true);
     tm(function () { b.hidden = true; }, ms || 2600);
   }
   function setClass(name) {

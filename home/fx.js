@@ -139,9 +139,12 @@
     else if (force && !auto) FX.voiceBroken = true;
     return ok;
   }
+  var seqRun = 0;   // bumped by every new clip or sequence, so an older sequence stops instead of talking over the new one
+  FX.stopSeq = function () { seqRun++; };
   FX.clip = function (url, force, auto) {
     if (!soundOn && !force) return Promise.resolve(false);
     ac(); unlockPlayer();
+    seqRun++;
     return viaPlayer(url).catch(function (e1) {
       if (e1 && e1.name === 'AbortError') return true;   // a newer clip took over: nothing is wrong
       return viaWebAudio(url).catch(function (e2) {
@@ -152,11 +155,13 @@
   };
 
   /* read several clips one after another (used to say a word syllable by syllable) */
-  FX.sequence = function (urls, force, auto) {
+  // maxMs = longest wait for ONE clip to end (default 2500 for single syllables; story lines pass more)
+  FX.sequence = function (urls, force, auto, maxMs) {
     if (!soundOn && !force) return Promise.resolve(false);
     ac(); unlockPlayer();
-    var i = 0;
+    var i = 0, my = ++seqRun;
     function next() {
+      if (my !== seqRun) return Promise.resolve(true);   // cancelled by a newer clip: nothing is wrong
       if (i >= urls.length) return Promise.resolve(true);
       var u = urls[i++];
       return viaPlayer(u).then(function () {
@@ -164,7 +169,7 @@
           var fin = false;
           function done() { if (fin) return; fin = true; player.removeEventListener('ended', done); setTimeout(res, 120); }
           player.addEventListener('ended', done);
-          setTimeout(done, 2500);
+          setTimeout(done, maxMs || 2500);
         });
       }).then(next);
     }

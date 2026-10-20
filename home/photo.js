@@ -48,11 +48,12 @@
     app.innerHTML =
       '<div class="practice ph-game">' +
       '<div class="topbar"><button class="btn" id="phquit">✕ Quit</button><span class="title">' + dots + '</span>' + A.soundBtn() + '</div>' +
-      '<div class="ph-card"><div class="ph-zh">' + esc(zh(t)) + '</div>' + (showPy ? '<div class="ph-py">' + esc(t.py) + '</div>' : '') + words + '<div class="ph-cap" id="phcap">Which photo matches?</div><div class="hint" id="hint"></div></div>' +
+      '<div class="ph-card"><div class="strow ttl"><div class="ph-zh">' + esc(zh(t)) + '</div>' + window.OWNV.btn(window.OWNV.idForText(t.zh), 'sm', 'Hear the sentence') + '</div>' + (showPy ? '<div class="ph-py">' + esc(t.py) + '</div>' : '') + words + '<div class="ph-cap" id="phcap">Which photo matches?</div><div class="hint" id="hint"></div></div>' +
       '<div class="ph-grid" id="phgrid">' + opts.map(function (o) {
         return '<button class="ph-opt" data-ok="' + (o === t ? 1 : 0) + '"><img src="' + o.f + '" alt="' + esc(o.alt) + '" draggable="false"></button>';
       }).join('') + '</div></div>';
     A.bindTop(function () { draw(); });
+    window.OWNV.bind(app, function () { A.toast('Could not play the sound. Check the volume.'); });
     $('phquit').onclick = function () { S = null; A.go('#/g/photo'); };
     Array.prototype.forEach.call(app.querySelectorAll('.ph-opt'), function (b) { b.onclick = function () { answer(b, t); }; });
   }
@@ -64,11 +65,13 @@
       Array.prototype.forEach.call(app.querySelectorAll('.ph-opt'), function (b) { if (b !== btn) b.classList.add('dim'); });
       if (S.miss === 0) S.firsts++;
       var me = S;
+      var oid = window.OWNV.idForText(t.zh);          // the narrator reads the sentence once the photo is right
+      if (oid) window.OWNV.playFile(window.OWNV.file(oid), false, true);
       A.later(function () {
         if (S !== me) return;
         S.i++;
         if (S.i >= S.order.length) end(); else draw();
-      }, 1700);
+      }, Math.max(1700, oid ? window.OWNV.secs(oid) * 1000 + 900 : 0));
     } else {
       S.miss++; btn.classList.add('nope'); btn.disabled = true; FX.oops();
       A.hint('Not quite. Read the sentence again, then try another photo!');

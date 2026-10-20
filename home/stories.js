@@ -37,10 +37,13 @@
 
   function read(S) {
     var L = lessonOf(S);
-    var lines = S.lines.map(function (ln) {
-      return '<div class="stline"><div class="stzh">' + A.esc(isT() ? ln.t : ln.s) + '</div>' + (showPy ? '<div class="stpy">' + A.esc(ln.py) + '</div>' : '') +
+    var V = window.OWNV;
+    var lines = S.lines.map(function (ln, i) {
+      return '<div class="stline"><div class="strow"><div class="stzh">' + A.esc(isT() ? ln.t : ln.s) + '</div>' + V.btn(V.lineId(S, i), 'sm', 'Hear this line') + '</div>' + (showPy ? '<div class="stpy">' + A.esc(ln.py) + '</div>' : '') +
         (showEn && ln.en ? '<div class="sten">' + A.esc(ln.en) + '</div>' : '') + '</div>';
     }).join('');
+    var storyIds = V.storyIds(S);
+    var listen = storyIds.length > 1 ? '<button type="button" class="btn stlisten" id="stlisten">🔊 Listen to the whole story</button>' : '';
     var hasEn = S.lines.some(function (ln) { return ln.en; });
     var words = (S.words && S.words.length) ? '<div class="stwords"><b>New words</b>' + S.words.map(function (w) {
       return '<span class="stw"><span class="stwz">' + A.esc(isT() ? w.t : w.s) + '</span> ' + A.pinyinHTML(w.py, null, 'sm') + ' <i>' + A.esc(w.en) + '</i></span>';
@@ -48,11 +51,15 @@
     app.innerHTML =
       '<div class="screen story" style="--acc:' + A.acc(L) + '">' +
       '<div class="topbar"><button class="btn" data-go="#/l/' + L.id + '">‹ Back</button><span class="title">' + S.icon + ' Story</span><span class="tools">' + A.soundBtn() + A.scriptToggle() + '</span></div>' +
-      '<div class="storycard"><h2 class="sttitle">' + A.esc(title(S)) + '</h2>' + (showPy ? '<div class="stpy sttp">' + A.esc(S.title.py) + '</div>' : '') + lines + '</div>' + words +
+      '<div class="storycard"><div class="strow ttl"><h2 class="sttitle">' + A.esc(title(S)) + '</h2>' + V.btn(V.titleId(S), 'sm', 'Hear the title') + '</div>' + (showPy ? '<div class="stpy sttp">' + A.esc(S.title.py) + '</div>' : '') + listen + lines + '</div>' + words +
       '<div class="controls ' + (hasEn ? 'three' : 'two') + '"><button class="btn" id="stpy">' + (showPy ? 'Hide pinyin' : 'Show pinyin') + '</button>' +
       (hasEn ? '<button class="btn" id="sten">' + (showEn ? 'Hide English' : 'Show English') + '</button>' : '') +
       '<button class="btn primary" id="stq">📝 Questions</button></div></div>';
     A.bindTop(function () { read(S); });
+    var failed = function () { A.toast('Could not play the sound. Check the volume, then open About and tap Sound check.'); };
+    V.bind(app, failed);
+    if ($('stlisten')) $('stlisten').onclick = function () { V.playAll(storyIds, true).then(function (ok) { if (ok === false) failed(); }); };
+    if (A.onLeave) A.onLeave(function () { FX.stopSeq(); });
     $('stpy').onclick = function () { showPy = !showPy; store.set('storypy', showPy); read(S); };
     if ($('sten')) $('sten').onclick = function () { showEn = !showEn; store.set('storyen', showEn); read(S); };
     $('stq').onclick = function () { A.go('#/s/' + S.id + '/q'); };
